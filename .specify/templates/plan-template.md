@@ -47,7 +47,13 @@
 ## Constitution Check
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-[Gates determined based on constitution file]
+1.  **Simplicity**: Does the proposed solution use the clearest and most minimal setup?
+2.  **Modularity**: Is the new functionality encapsulated within a distinct agent or module?
+3.  **Readability**: Is the code clean and the structure intuitive?
+4.  **Transparent Orchestration**: Does the plan leverage LangGraph for coordination and include logging?
+5.  **UI-First**: Is the Chainlit interface considered in the design?
+6.  **Robustness**: Does the plan include basic error handling and tracing?
+7.  **Extensibility**: Is the design easy to expand upon later?
 
 ## Project Structure
 
@@ -208,4 +214,4 @@ ios/ or android/
 - [ ] Complexity deviations documented
 
 ---
-*Based on Constitution v2.1.1 - See `/memory/constitution.md`*
+*Based on Constitution v1.0.0 - See `/.specify/memory/constitution.md`*
