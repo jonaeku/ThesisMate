@@ -1,7 +1,7 @@
 import requests
 from typing import Dict, Any, Optional
 from src.utils.config import get_env
-from src.utils.logging import get_logger
+from src.utils.custom_logging import get_logger
 
 logger = get_logger(__name__)
 

@@ -8,7 +8,7 @@ from src.agents.topic_scout import TopicScoutAgent
 from src.agents.writing import WritingAssistantAgent
 
 from src.utils.config import get_env
-from src.utils.logging import get_logger
+from src.utils.custom_logging import get_logger
 from src.utils.openrouter_client import OpenRouterClient
 
 logger = get_logger(__name__)
