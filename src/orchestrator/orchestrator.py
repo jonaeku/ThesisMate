@@ -44,9 +44,42 @@ class Orchestrator:
 
     def run(self, query: str) -> str:
         """
-        For now, bypass agents and return OpenRouter response directly.
-        Agents will be enhanced in the future.
+        Route queries to appropriate agents or use direct LLM response.
         """
+        query_lower = query.lower()
+        
+        # Simple routing: if query contains research keywords, use Research Agent
+        research_keywords = ['research', 'papers', 'literature', 'topic evaluation', 'feasibility', 'deep research']
+        if any(keyword in query_lower for keyword in research_keywords):
+            logger.info("Routing to Research Agent")
+            try:
+                # Extract topic (simple approach)
+                topic = query.replace('research', '').replace('papers', '').replace('literature', '').strip()
+                if not topic:
+                    topic = query
+                
+                # Use Research Agent
+                papers = self.research_agent.collect_papers(topic, max_results=10)
+                
+                # Simple formatting
+                if papers:
+                    result = f"Found {len(papers)} papers on '{topic}':\n\n"
+                    for i, paper in enumerate(papers[:5], 1):
+                        result += f"{i}. **{paper.title}** ({paper.year})\n"
+                        result += f"   Authors: {', '.join(paper.authors[:3])}\n"
+                        result += f"   Relevance: {paper.relevance_score:.2f}\n"
+                        if paper.url:
+                            result += f"   Link: {paper.url}\n"
+                        result += "\n"
+                    return result
+                else:
+                    return f"No papers found for topic: {topic}"
+                    
+            except Exception as e:
+                logger.error(f"Research Agent error: {e}")
+                return f"Error during research: {str(e)}"
+        
+        # Default: use direct LLM response
         messages = [
             {
                 "role": "system",
