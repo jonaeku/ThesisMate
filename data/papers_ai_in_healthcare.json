@@ -1,0 +1,154 @@
+[
+  {
+    "title": "AI in Healthcare: Do Not Forget About Allied Healthcare",
+    "authors": [
+      "Tim Hulsen",
+      "Mark Scheper"
+    ],
+    "abstract": "<jats:p>Artificial intelligence, the simulation of human intelligence by computers and machines, has found its way into healthcare, helping surgeons, doctors, radiologists, and many more. However, over 80% of healthcare professionals consists of people working in allied health professions such as nurses, physiotherapists, and midwives. Considering the aging of the general population around the world, the workforce shortages in these occupations are especially crucial. As the COVID-19 pandemic de...",
+    "url": "https://doi.org/10.3390/ai6060114",
+    "bibtex": "@article{ai2025,\n  title={AI in Healthcare: Do Not Forget About Allied Healthcare},\n  author={Tim Hulsen and Mark Scheper},\n  year={2025},\n  journal={AI},\n  doi={10.3390/ai6060114}\n}",
+    "year": 2025,
+    "relevance_score": 1.0,
+    "source": "crossref",
+    "citation_count": null,
+    "doi": "10.3390/ai6060114"
+  },
+  {
+    "title": "AI in Hospital Administration, Revolutionizing Healthcare",
+    "authors": [
+      "David Mhlanga"
+    ],
+    "abstract": "Abstract not available",
+    "url": "https://doi.org/10.1201/9781003475804-13",
+    "bibtex": "@article{ai2025,\n  title={AI in Hospital Administration, Revolutionizing Healthcare},\n  author={David Mhlanga},\n  year={2025},\n  journal={AI in Hospital Administration},\n  doi={10.1201/9781003475804-13}\n}",
+    "year": 2025,
+    "relevance_score": 1.0,
+    "source": "crossref",
+    "citation_count": null,
+    "doi": "10.1201/9781003475804-13"
+  },
+  {
+    "title": "SoK: Security and Privacy Risks of Healthcare AI",
+    "authors": [
+      "Yuanhaur Chang",
+      "Han Liu",
+      "Chenyang Lu",
+      "Ning Zhang"
+    ],
+    "abstract": "The integration of artificial intelligence (AI) and machine learning (ML) into healthcare systems holds great promise for enhancing patient care and care delivery efficiency; however, it also exposes sensitive data and system integrity to potential cyberattacks. Current security and privacy (S&P) research on healthcare AI is highly unbalanced in terms of healthcare deployment scenarios and threat models, and has a disconnected focus with the biomedical research community. This hinders a comprehensive understanding of the risks that healthcare AI entails. To address this gap, this paper takes a thorough examination of existing healthcare AI S&P research, providing a unified framework that allows the identification of under-explored areas. Our survey presents a systematic overview of healthcare AI attacks and defenses, and points out challenges and research opportunities for each AI-driven healthcare application domain. Through our experimental analysis of different threat models and feasibility studies on under-explored adversarial attacks, we provide compelling insights into the pressing need for cybersecurity research in the rapidly evolving field of healthcare AI.",
+    "url": "http://arxiv.org/abs/2409.07415v2",
+    "bibtex": "@article{sok:2024,\n  title={SoK: Security and Privacy Risks of Healthcare AI},\n  author={Yuanhaur Chang and Han Liu and Chenyang Lu and Ning Zhang},\n  year={2024},\n  url={http://arxiv.org/abs/2409.07415v2},\n  note={arXiv preprint}\n}",
+    "year": 2024,
+    "relevance_score": 0.6666666666666666,
+    "source": "arxiv",
+    "citation_count": null,
+    "doi": null
+  },
+  {
+    "title": "Threefold model for AI Readiness: A Case Study with Finnish Healthcare   SMEs",
+    "authors": [
+      "Mohammed Alnajjar",
+      "Khalid Alnajjar",
+      "Mika Hämäläinen"
+    ],
+    "abstract": "This study examines AI adoption among Finnish healthcare SMEs through semi-structured interviews with six health-tech companies. We identify three AI engagement categories: AI-curious (exploring AI), AI-embracing (integrating AI), and AI-catering (providing AI solutions). Our proposed threefold model highlights key adoption barriers, including regulatory complexities, technical expertise gaps, and financial constraints. While SMEs recognize AI's potential, most remain in early adoption stages. We provide actionable recommendations to accelerate AI integration, focusing on regulatory reforms, talent development, and inter-company collaboration, offering valuable insights for healthcare organizations, policymakers, and researchers.",
+    "url": "http://arxiv.org/abs/2503.14527v1",
+    "bibtex": "@article{threefold2025,\n  title={Threefold model for AI Readiness: A Case Study with Finnish Healthcare   SMEs},\n  author={Mohammed Alnajjar and Khalid Alnajjar and Mika Hämäläinen},\n  year={2025},\n  url={http://arxiv.org/abs/2503.14527v1},\n  note={arXiv preprint}\n}",
+    "year": 2025,
+    "relevance_score": 0.6666666666666666,
+    "source": "arxiv",
+    "citation_count": null,
+    "doi": null
+  },
+  {
+    "title": "Reliable and Resilient AI and IoT-based Personalised Healthcare   Services: A Survey",
+    "authors": [
+      "Najma Taimoor",
+      "Semeen Rehman"
+    ],
+    "abstract": "Recent technological and economic developments have transformed the healthcare sector towards more personalized and IoT-based healthcare services. These services are realized through control and monitoring applications that are typically developed using artificial intelligence/machine learning-based algorithms, which play a significant role in highlighting the efficiency of traditional healthcare systems. Current personalized healthcare services are dedicated to a specific environment to support technological personalization. However, they are unable to consider different interrelated health conditions, leading to inappropriate diagnoses and affecting sustainability and the long-term health of patients. To this end, current Healthcare 5.0 technology has evolved that supersede previous healthcare technologies. The goal of healthcare 5.0 is to achieve an autonomous healthcare service, that takes into account the interdependent effect of different health conditions of a patient. This paper conducts a comprehensive survey on personalized healthcare services. In particular, we first present an overview of key requirements of comprehensive personalized healthcare services in modern healthcare Internet of Things (HIoT), including the definition of personalization and an example use case scenario as a representative for modern HIoT. Second, we explored a fundamental three-layer architecture for IoT-based healthcare systems using AI and non-AI-based approaches, considering key requirements for CPHS followed by their strengths and weaknesses in the frame of personalized healthcare services. Third, we highlighted different security threats against each layer of IoT architecture along with the possible AI and non-AI-based solutions. Finally, we propose a methodology to develop reliable, resilient, and personalized healthcare services that address the identified weaknesses of existing approaches.",
+    "url": "http://arxiv.org/abs/2209.05457v1",
+    "bibtex": "@article{reliable2022,\n  title={Reliable and Resilient AI and IoT-based Personalised Healthcare   Services: A Survey},\n  author={Najma Taimoor and Semeen Rehman},\n  year={2022},\n  url={http://arxiv.org/abs/2209.05457v1},\n  note={arXiv preprint}\n}",
+    "year": 2022,
+    "relevance_score": 0.6666666666666666,
+    "source": "arxiv",
+    "citation_count": null,
+    "doi": null
+  },
+  {
+    "title": "Risk of AI in Healthcare: A Comprehensive Literature Review and Study   Framework",
+    "authors": [
+      "Apoorva Muley",
+      "Prathamesh Muzumdar",
+      "George Kurian",
+      "Ganga Prasad Basyal"
+    ],
+    "abstract": "This study conducts a thorough examination of the research stream focusing on AI risks in healthcare, aiming to explore the distinct genres within this domain. A selection criterion was employed to carefully analyze 39 articles to identify three primary genres of AI risks prevalent in healthcare: clinical data risks, technical risks, and socio-ethical risks. Selection criteria was based on journal ranking and impact factor. The research seeks to provide a valuable resource for future healthcare researchers, furnishing them with a comprehensive understanding of the complex challenges posed by AI implementation in healthcare settings. By categorizing and elucidating these genres, the study aims to facilitate the development of empirical qualitative and quantitative research, fostering evidence-based approaches to address AI-related risks in healthcare effectively. This endeavor contributes to building a robust knowledge base that can inform the formulation of risk mitigation strategies, ensuring safe and efficient integration of AI technologies in healthcare practices. Thus, it is important to study AI risks in healthcare to build better and efficient AI systems and mitigate risks.",
+    "url": "http://arxiv.org/abs/2309.14530v1",
+    "bibtex": "@article{risk2023,\n  title={Risk of AI in Healthcare: A Comprehensive Literature Review and Study   Framework},\n  author={Apoorva Muley and Prathamesh Muzumdar and George Kurian and Ganga Prasad Basyal},\n  year={2023},\n  url={http://arxiv.org/abs/2309.14530v1},\n  note={arXiv preprint}\n}",
+    "year": 2023,
+    "relevance_score": 0.6666666666666666,
+    "source": "arxiv",
+    "citation_count": null,
+    "doi": null
+  },
+  {
+    "title": "Ethical Considerations in AI-enabled Healthcare",
+    "authors": [
+      "David Mhlanga"
+    ],
+    "abstract": "Abstract not available",
+    "url": "https://doi.org/10.1201/9781003475804-11",
+    "bibtex": "@article{ethical2025,\n  title={Ethical Considerations in AI-enabled Healthcare},\n  author={David Mhlanga},\n  year={2025},\n  journal={AI in Hospital Administration},\n  doi={10.1201/9781003475804-11}\n}",
+    "year": 2025,
+    "relevance_score": 0.6666666666666666,
+    "source": "crossref",
+    "citation_count": null,
+    "doi": "10.1201/9781003475804-11"
+  },
+  {
+    "title": "Autonomous Mobile Clinics: Empowering Affordable Anywhere Anytime   Healthcare Access",
+    "authors": [
+      "Shaoshan Liu",
+      "Yuzhang Huang",
+      "Leiyu Shi"
+    ],
+    "abstract": "We are facing a global healthcare crisis today as the healthcare cost is ever climbing, but with the aging population, government fiscal revenue is ever dropping. To create a more efficient and effective healthcare system, three technical challenges immediately present themselves: healthcare access, healthcare equity, and healthcare efficiency. An autonomous mobile clinic solves the healthcare access problem by bringing healthcare services to the patient by the order of the patient's fingertips. Nevertheless, to enable a universal autonomous mobile clinic network, a three-stage technical roadmap needs to be achieved: In stage one, we focus on solving the inequity challenge in the existing healthcare system by combining autonomous mobility and telemedicine. In stage two, we develop an AI doctor for primary care, which we foster from infancy to adulthood with clean healthcare data. With the AI doctor, we can solve the inefficiency problem. In stage three, after we have proven that the autonomous mobile clinic network can truly solve the target clinical use cases, we shall open up the platform for all medical verticals, thus enabling universal healthcare through this whole new system.",
+    "url": "http://arxiv.org/abs/2204.04841v3",
+    "bibtex": "@article{autonomous2022,\n  title={Autonomous Mobile Clinics: Empowering Affordable Anywhere Anytime   Healthcare Access},\n  author={Shaoshan Liu and Yuzhang Huang and Leiyu Shi},\n  year={2022},\n  url={http://arxiv.org/abs/2204.04841v3},\n  note={arXiv preprint}\n}",
+    "year": 2022,
+    "relevance_score": 0.3333333333333333,
+    "source": "arxiv",
+    "citation_count": null,
+    "doi": null
+  },
+  {
+    "title": "Healthcare AI/ML essentials",
+    "authors": [
+      "Kapila Monga"
+    ],
+    "abstract": "Abstract not available",
+    "url": "https://doi.org/10.1201/9781003454663-1",
+    "bibtex": "@article{healthcare2025,\n  title={Healthcare AI/ML essentials},\n  author={Kapila Monga},\n  year={2025},\n  journal={AI/ML for Healthcare},\n  doi={10.1201/9781003454663-1}\n}",
+    "year": 2025,
+    "relevance_score": 0.3333333333333333,
+    "source": "crossref",
+    "citation_count": null,
+    "doi": "10.1201/9781003454663-1"
+  },
+  {
+    "title": "Navigate healthcare AI/ML responsibly",
+    "authors": [
+      "Kapila Monga"
+    ],
+    "abstract": "Abstract not available",
+    "url": "https://doi.org/10.1201/9781003454663-4",
+    "bibtex": "@article{navigate2025,\n  title={Navigate healthcare AI/ML responsibly},\n  author={Kapila Monga},\n  year={2025},\n  journal={AI/ML for Healthcare},\n  doi={10.1201/9781003454663-4}\n}",
+    "year": 2025,
+    "relevance_score": 0.3333333333333333,
+    "source": "crossref",
+    "citation_count": null,
+    "doi": "10.1201/9781003454663-4"
+  }
+]

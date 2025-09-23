@@ -1,0 +1,101 @@
+[
+  {
+    "title": "Self-Organizing Multilayered Neural Networks of Optimal Complexity",
+    "authors": [
+      "V. Schetinin"
+    ],
+    "abstract": "The principles of self-organizing the neural networks of optimal complexity is considered under the unrepresentative learning set. The method of self-organizing the multi-layered neural networks is offered and used to train the logical neural networks which were applied to the medical diagnostics.",
+    "url": "http://arxiv.org/abs/cs/0504056v1",
+    "bibtex": "@article{self-organizing2005,\n  title={Self-Organizing Multilayered Neural Networks of Optimal Complexity},\n  author={V. Schetinin},\n  year={2005},\n  url={http://arxiv.org/abs/cs/0504056v1},\n  note={arXiv preprint}\n}",
+    "year": 2005,
+    "relevance_score": 1.0,
+    "source": "arxiv",
+    "citation_count": null,
+    "doi": null
+  },
+  {
+    "title": "Graph Structure of Neural Networks",
+    "authors": [
+      "Jiaxuan You",
+      "Jure Leskovec",
+      "Kaiming He",
+      "Saining Xie"
+    ],
+    "abstract": "Neural networks are often represented as graphs of connections between neurons. However, despite their wide use, there is currently little understanding of the relationship between the graph structure of the neural network and its predictive performance. Here we systematically investigate how does the graph structure of neural networks affect their predictive performance. To this end, we develop a novel graph-based representation of neural networks called relational graph, where layers of neural network computation correspond to rounds of message exchange along the graph structure. Using this representation we show that: (1) a \"sweet spot\" of relational graphs leads to neural networks with significantly improved predictive performance; (2) neural network's performance is approximately a smooth function of the clustering coefficient and average path length of its relational graph; (3) our findings are consistent across many different tasks and datasets; (4) the sweet spot can be identified efficiently; (5) top-performing neural networks have graph structure surprisingly similar to those of real biological neural networks. Our work opens new directions for the design of neural architectures and the understanding on neural networks in general.",
+    "url": "http://arxiv.org/abs/2007.06559v2",
+    "bibtex": "@article{graph2020,\n  title={Graph Structure of Neural Networks},\n  author={Jiaxuan You and Jure Leskovec and Kaiming He and Saining Xie},\n  year={2020},\n  url={http://arxiv.org/abs/2007.06559v2},\n  note={arXiv preprint}\n}",
+    "year": 2020,
+    "relevance_score": 1.0,
+    "source": "arxiv",
+    "citation_count": null,
+    "doi": null
+  },
+  {
+    "title": "Neural Networks",
+    "authors": [],
+    "abstract": "Abstract not available",
+    "url": "https://doi.org/10.1016/s0893-6080(13)00287-6",
+    "bibtex": "@article{neural2014,\n  title={Neural Networks},\n  author={Unknown},\n  year={2014},\n  journal={Neural Networks},\n  doi={10.1016/s0893-6080(13)00287-6}\n}",
+    "year": 2014,
+    "relevance_score": 1.0,
+    "source": "crossref",
+    "citation_count": null,
+    "doi": "10.1016/s0893-6080(13)00287-6"
+  },
+  {
+    "title": "Hybrid neural networks",
+    "authors": [],
+    "abstract": "Abstract not available",
+    "url": "https://doi.org/10.1016/0893-6080(88)90047-0",
+    "bibtex": "@article{hybrid1988,\n  title={Hybrid neural networks},\n  author={Unknown},\n  year={1988},\n  journal={Neural Networks},\n  doi={10.1016/0893-6080(88)90047-0}\n}",
+    "year": 1988,
+    "relevance_score": 1.0,
+    "source": "crossref",
+    "citation_count": null,
+    "doi": "10.1016/0893-6080(88)90047-0"
+  },
+  {
+    "title": "Lecture Notes: Neural Network Architectures",
+    "authors": [
+      "Evelyn Herberg"
+    ],
+    "abstract": "These lecture notes provide an overview of Neural Network architectures from a mathematical point of view. Especially, Machine Learning with Neural Networks is seen as an optimization problem. Covered are an introduction to Neural Networks and the following architectures: Feedforward Neural Network, Convolutional Neural Network, ResNet, and Recurrent Neural Network.",
+    "url": "http://arxiv.org/abs/2304.05133v2",
+    "bibtex": "@article{lecture2023,\n  title={Lecture Notes: Neural Network Architectures},\n  author={Evelyn Herberg},\n  year={2023},\n  url={http://arxiv.org/abs/2304.05133v2},\n  note={arXiv preprint}\n}",
+    "year": 2023,
+    "relevance_score": 0.5,
+    "source": "arxiv",
+    "citation_count": null,
+    "doi": null
+  },
+  {
+    "title": "Neural Network Processing Neural Networks: An efficient way to learn   higher order functions",
+    "authors": [
+      "Firat Tuna"
+    ],
+    "abstract": "Functions are rich in meaning and can be interpreted in a variety of ways. Neural networks were proven to be capable of approximating a large class of functions[1]. In this paper, we propose a new class of neural networks called \"Neural Network Processing Neural Networks\" (NNPNNs), which inputs neural networks and numerical values, instead of just numerical values. Thus enabling neural networks to represent and process rich structures.",
+    "url": "http://arxiv.org/abs/1911.05640v2",
+    "bibtex": "@article{neural2019,\n  title={Neural Network Processing Neural Networks: An efficient way to learn   higher order functions},\n  author={Firat Tuna},\n  year={2019},\n  url={http://arxiv.org/abs/1911.05640v2},\n  note={arXiv preprint}\n}",
+    "year": 2019,
+    "relevance_score": 0.5,
+    "source": "arxiv",
+    "citation_count": null,
+    "doi": null
+  },
+  {
+    "title": "Guaranteed Quantization Error Computation for Neural Network Model   Compression",
+    "authors": [
+      "Wesley Cooke",
+      "Zihao Mo",
+      "Weiming Xiang"
+    ],
+    "abstract": "Neural network model compression techniques can address the computation issue of deep neural networks on embedded devices in industrial systems. The guaranteed output error computation problem for neural network compression with quantization is addressed in this paper. A merged neural network is built from a feedforward neural network and its quantized version to produce the exact output difference between two neural networks. Then, optimization-based methods and reachability analysis methods are applied to the merged neural network to compute the guaranteed quantization error. Finally, a numerical example is proposed to validate the applicability and effectiveness of the proposed approach.",
+    "url": "http://arxiv.org/abs/2304.13812v1",
+    "bibtex": "@article{guaranteed2023,\n  title={Guaranteed Quantization Error Computation for Neural Network Model   Compression},\n  author={Wesley Cooke and Zihao Mo and Weiming Xiang},\n  year={2023},\n  url={http://arxiv.org/abs/2304.13812v1},\n  note={arXiv preprint}\n}",
+    "year": 2023,
+    "relevance_score": 0.5,
+    "source": "arxiv",
+    "citation_count": null,
+    "doi": null
+  }
+]
