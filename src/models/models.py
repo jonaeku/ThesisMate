@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 class TopicSuggestion(BaseModel):
     title: str
@@ -15,6 +15,6 @@ class ResearchSummary(BaseModel):
 class OutlineSection(BaseModel):
     title: str
     description: str
-    subsections: list["OutlineSection"] = []
+    subsections: list["OutlineSection"] = Field(default_factory=list)
 
 OutlineSection.model_rebuild()

@@ -40,3 +40,5 @@ chainlit.db
 tmp/
 temp/
 *.tmp
+test_lookup.py
+src/utils/openai_client.py
