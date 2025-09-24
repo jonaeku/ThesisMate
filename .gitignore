@@ -40,3 +40,6 @@ chainlit.db
 tmp/
 temp/
 *.tmp
+
+credentials.json
+token.json

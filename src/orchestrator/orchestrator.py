@@ -9,6 +9,7 @@ from src.agents.writing import WritingAssistantAgent
 
 from src.utils.config import get_env
 from src.utils.custom_logging import get_logger
+from src.utils.google_reminder import next_deadline_message
 from src.utils.openrouter_client import OpenRouterClient
 
 logger = get_logger(__name__)
@@ -59,6 +60,8 @@ class Orchestrator:
         ]
         
         response = self.client.chat_completion(messages, temperature=0.7, max_tokens=1500)
+
+        response += f"\n \n {next_deadline_message()["message"]}"
         
         if response:
             logger.info("Successfully got response from OpenRouter")
