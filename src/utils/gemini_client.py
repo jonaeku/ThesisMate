@@ -11,36 +11,45 @@ class GeminiClient:
         genai.configure(api_key=api_key)
         self.model = genai.GenerativeModel(model)
 
-    def chat_completion(self, messages, temperature: float = 0.0, max_tokens: int = 600) -> str:
-        # Prompt zusammenbauen
+    def chat_completion(
+        self,
+        messages,
+        temperature: float = 0.0,
+        max_tokens: int = 600,
+        response_schema: dict | None = None,
+        force_json: bool = False,
+    ) -> str:
+        # Messages in einen Prompt gießen (einfach, aber robust)
         parts = []
         for m in messages:
             role = m.get("role", "user")
             parts.append(f"{role.capitalize()}: {m.get('content','').strip()}")
         prompt = "\n".join(parts).strip()
 
-        # Minimales Schema (nur erlaubte Felder)
-        response_schema = {
-            "type": "array",
-            "items": {
-                "type": "object",
-                "properties": {
-                    "title": {"type": "string"},
-                    "description": {"type": "string"}
-                },
-                "required": ["title", "description"]
-            }
-        }
-
-        cfg = GenerationConfig(
+        # Generation Config
+        cfg_kwargs = dict(
             temperature=temperature,
             max_output_tokens=max_tokens,
-            response_mime_type="application/json",
-            response_schema=response_schema,
         )
+        # JSON-Mode aktivieren, wenn Schema gegeben oder explizit gefordert
+        if response_schema or force_json:
+            cfg_kwargs["response_mime_type"] = "application/json"
+        if response_schema:
+            cfg_kwargs["response_schema"] = response_schema
 
+        cfg = GenerationConfig(**cfg_kwargs)
         resp = self.model.generate_content(prompt, generation_config=cfg)
-        out = resp.text if isinstance(resp.text, str) else None
-        if not out or not out.strip():
-            raise ValueError("Gemini returned empty JSON response")
-        return out.strip()
+
+        # Text robust extrahieren
+        text = getattr(resp, "text", None)
+        if not text:
+            # Fallback: aus Kandidaten lesen
+            try:
+                cand = resp.candidates[0]
+                parts = getattr(cand, "content", {}).parts or []
+                text = "".join(getattr(p, "text", "") for p in parts)
+            except Exception:
+                text = ""
+        if not text or not text.strip():
+            raise ValueError("Gemini returned empty response")
+        return text.strip()

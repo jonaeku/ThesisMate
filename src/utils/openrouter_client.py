@@ -1,5 +1,6 @@
 # src/utils/openrouter_client.py
 import time
+import threading
 import requests
 from typing import Dict, Any, Optional, List
 from src.utils.config import get_env
@@ -38,6 +39,9 @@ class OpenRouterClient:
             "HTTP-Referer": "https://github.com/your-repo/thesismate",
             "X-Title": "ThesisMate"
         }
+        self._lock = threading.Lock()
+        self._last_call = 0.0
+        self._min_interval = 1.2
 
     def _should_force_json(self, messages: List[Dict[str, str]]) -> bool:
         for m in messages:

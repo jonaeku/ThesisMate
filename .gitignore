@@ -42,3 +42,8 @@ temp/
 *.tmp
 test_lookup.py
 src/utils/openai_client.py
+data/papers_Computer_Science_IT.json
+.gitignore
+src/utils/gemini_client copy.py
+src/orchestrator/orchestrator_old.py
+src/agents/structure_old.py

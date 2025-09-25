@@ -1,5 +1,0 @@
-- Avoid first person.
-- Prefer passive voice in Methods.
-- Always define acronyms at first mention.
-- Use British spelling.
-- Never use rhetorical questions.
