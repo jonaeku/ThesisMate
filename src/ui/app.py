@@ -23,8 +23,7 @@ async def on_chat_start():
     - Writing assistance and content generation
     - Reviewing and providing feedback
 
-    👉 Drag & drop a file here to save it as a guardrail (allowed: .md, .txt, .pdf, .docx),
-       or type **upload guardrail** to pick a file.
+    👉 Drag & drop a file here to save it as a guardrail (allowed: .md, .txt, .pdf, .docx)
     
     What would you like to work on today?
     """

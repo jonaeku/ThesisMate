@@ -1,6 +1,6 @@
 # src/agents/structure.py
 from __future__ import annotations
-from typing import List, Optional, Tuple
+from typing import List, Optional
 import re
 from src.utils.logging import get_logger
 from src.utils.openrouter_client import OpenRouterClient
@@ -24,9 +24,10 @@ class StructureAgent:
         self.agent_name = "structure_agent"
 
     # ---------- Public API ----------
+
     def can_handle_request(self, user_input: str, context: UserContext) -> AgentCapabilityAssessment:
         """
-        Spiegel des Topic-Agent-Verhaltens: schneller LLM-Check "YES/NO".
+        Mirror of Topic-Agent behavior: quick LLM-based "YES/NO" capability check.
         """
         try:
             prompt = f"""You are a Structure Agent for thesis outlines.
@@ -65,7 +66,9 @@ Answer ONLY "YES" or "NO" with a brief reason."""
             )
         except Exception as e:
             logger.warning(f"can_handle_request failed: {e}")
-            return AgentCapabilityAssessment(can_handle=True, confidence=0.6, missing_info=[], reasoning=str(e), suggested_questions=[])
+            return AgentCapabilityAssessment(
+                can_handle=True, confidence=0.6, missing_info=[], reasoning=str(e), suggested_questions=[]
+            )
 
     def process_request(
         self,
@@ -74,132 +77,232 @@ Answer ONLY "YES" or "NO" with a brief reason."""
         research_summaries: Optional[List] = None,
         options: Optional[dict] = None,
     ) -> AgentResponse:
-        """
-        Hauptmethode: erzeugt eine Outline (Pydantic) + gibt eine Markdown-Ansicht
-        in user_message für die UI zurück. Fragt nur nach, wenn Topic/Title fehlt.
-        """
-        logger.info(f"StructureAgent processing: {user_input[:120]}")
+        logger.info(f"[StructureAgent] processing: {user_input[:120]}")
+        try:
+            # 1) Enrich context
+            updated_ctx = self._update_context_from_input(user_input, context)
 
-        # 1) Minimalen Titel/Thema finden
-        title = self._extract_title_from_input_or_context(user_input, context)
+            # 2) Capability check
+            assessment = self.can_handle_request(user_input, updated_ctx)
+            if not assessment.can_handle:
+                return AgentResponse(
+                    success=False,
+                    agent_name=self.agent_name,
+                    capability_assessment=assessment,
+                    user_message=f"I can't help with this request. {assessment.reasoning}",
+                    updated_context=updated_ctx,
+                )
 
-        # 2) Falls nichts Brauchbares: gezielte Rückfrage wie beim Topic-Agent
-        if not title:
-            question = "Für die Gliederung brauche ich einen (Arbeits-)Titel oder ein klares Thema. Wie lautet dein Thema?"
-            instruction = AgentInstruction(
-                requesting_agent=self.agent_name,
-                action_type="ask_user",
-                target="user",
-                message=question,
-                reasoning="Need a working title/topic to tailor the outline.",
+            # 3) Do we have enough info?
+            if not self._has_enough_info(updated_ctx):
+                question = self._get_next_question(updated_ctx)
+                instruction = AgentInstruction(
+                    requesting_agent=self.agent_name,
+                    action_type="ask_user",
+                    target="user",
+                    message=question,
+                    reasoning="Need this information to create a suitable outline.",
+                )
+                return AgentResponse(
+                    success=False,
+                    agent_name=self.agent_name,
+                    instructions=[instruction],
+                    user_message=question,
+                    updated_context=updated_ctx,
+                )
+
+            # 4) Generate outline (Markdown)
+            title = updated_ctx.working_title
+            if not title:
+                return AgentResponse(
+                    success=False,
+                    agent_name=self.agent_name,
+                    user_message="What is your working title or precise topic?",
+                    updated_context=updated_ctx,
+                )
+            outline_md = self._generate_outline_markdown(
+                title=title,
+                research_summaries=research_summaries,
+                options=options or {},
+                context=updated_ctx,
             )
+
+            # 5) Parse Markdown → model
+            thesis_outline = self._parse_outline_md_to_model(title, outline_md)
+
+            # 6) (Optional) validate with research tool
+            # if getattr(self, "research_tool", None):
+            #     thesis_outline = self._validate_outline_with_research(thesis_outline)
+
+            # 7) UI formatting
+            ui_md = outline_to_markdown_chat_compact(
+                outline=self._thesis_to_outline_section(thesis_outline),
+                topic=title
+            )
+
+            try:
+                self._save_outline(title=title, model=thesis_outline, markdown=outline_md)
+            except Exception as e:
+                logger.warning(f"[StructureAgent] Could not save outline: {e}")
+
+            return AgentResponse(
+                success=True,
+                agent_name=self.agent_name,
+                result=thesis_outline,
+                user_message=ui_md,
+                updated_context=updated_ctx,
+            )
+        except Exception as e:
+            logger.error(f"[StructureAgent] Error: {e}")
             return AgentResponse(
                 success=False,
                 agent_name=self.agent_name,
-                instructions=[instruction],
-                user_message=question,
-                updated_context=context,  # unverändert
+                user_message=f"An error occurred: {e}",
+                updated_context=context,
             )
 
-        # 3) Outline via LLM als Markdown erzeugen (ein Call)
-        outline_md = self._generate_outline_markdown(title, research_summaries, options or {})
+    # ---------- Helpers: context & gating ----------
 
-        # 4) Markdown -> Pydantic-Modell parsen
-        thesis_outline = self._parse_outline_md_to_model(title, outline_md)
+    def _update_context_from_input(self, user_input: str, context: UserContext) -> UserContext:
+        """
+        Set working_title only when it is clearly identifiable:
+        - Explicit field: "Title/Topic: <...>"
+        - Command phrases like "create outline for <TITLE>"
+        - Orchestrator format: "User's additional info: <TITLE>"
+        No generic fallback.
+        """
+        if getattr(context, "working_title", None):
+            return context  # already set
 
-        # 5) UI-Message im gleichen Stil wie von dir erwartet (mit erkennbarem Marker)
-        #    Der Prefix hilft deinem Orchestrator-Check (_is_completed_result) direkt zu enden.
-        #ui_md = f"🧭 **Outline für:** *{title}*\n\n{outline_md}".strip()
-        ui_md = outline_to_markdown_chat_compact(outline=self._thesis_to_outline_section(thesis_outline),topic=title)
-        try:
-            saved = self._save_outline(title=title, model=thesis_outline, markdown=outline_md)
-            logger.info(f"[StructureAgent] Outline saved: {saved}")
-        except Exception as e:
-            logger.warning(f"Could not save outline: {e}")
+        text = (user_input or "").strip()
 
-        return AgentResponse(
-            success=True,
-            agent_name=self.agent_name,
-            result=thesis_outline,        # Pydantic Objekt für den Orchestrator/Backend
-            user_message=ui_md,           # Fertiges Markdown für die UI
-            updated_context=context       # Falls du etwas im Context pflegen willst, hier (z.B. working_title)
-        )
-
-    # ---------- Helpers ----------
-    def _save_outline(self, title: str, model: ThesisOutline, markdown: str):
-        outline_section = self._thesis_to_outline_section(model)
-        return save_outline(outline=outline_section, topic=title)
-
-    def _extract_title_from_input_or_context(self, user_input: str, context: UserContext) -> Optional[str]:
-        # a) Offensichtlich generisch? → kein Titel
-        if self._is_generic_request(user_input):
-            # prüfe, ob im Context schon ein echter Titel steckt
-            for key in ("working_title", "topic", "title"):
-                v = getattr(context, key, None)
-                if v and not self._is_generic_request(v):
-                    return v
-            # enriched input wird unten separat geprüft
-            pass
-
-        # b) Explizit "title/topic/thema: XYZ"
-        m = re.search(r'(?:title|topic|thema)\s*[:=]\s*["“]?(.+?)["”]?$', user_input, flags=re.I)
+        # 1) Explicit: "Title/Topic: ..."
+        m = re.search(r'(?:titel|thema|topic|title)\s*[:=]\s*["“]?(.+?)["”]?\s*$', text, flags=re.I | re.M)
         if m:
             cand = m.group(1).strip()
             if cand and not self._is_generic_request(cand):
-                return cand
+                context.working_title = cand
+                logger.info(f"[StructureAgent] title from explicit field: {context.working_title!r}")
+                return context
 
-        # c) Enriched input
-        if "User's additional info:" in user_input:
-            extra = user_input.split("User's additional info:", 1)[1].strip()
-            if extra and not self._is_generic_request(extra) and len(extra) >= 4:
-                return extra
+        # 2) Orchestrator format: "User's additional info: <TITLE>" (multi-line)
+        m = re.search(r"User['’]s additional info\s*:\s*(.+)$", text, flags=re.I | re.M)
+        if m:
+            cand = m.group(1).strip().strip('"\u201C\u201D')  # trim quotes/„“
+            if cand and not self._is_generic_request(cand):
+                context.working_title = cand
+                logger.info(f"[StructureAgent] title from orchestrator additional info: {context.working_title!r}")
+                return context
 
-        # d) Kontext
-        for key in ("working_title", "topic", "title"):
-            v = getattr(context, key, None)
-            if v and not self._is_generic_request(v):
-                return v
+        # 3) Command phrases e.g. "create outline for <TITLE>" / "gliederung für <TITEL>"
+        cmd_title = self._extract_title_from_command_phrase(text) if hasattr(self, "_extract_title_from_command_phrase") else None
+        if cmd_title:
+            context.working_title = cmd_title
+            logger.info(f"[StructureAgent] title from command phrase: {context.working_title!r}")
+            return context
 
-        # e) Strenger LLM-Fallback: generische Phrasen → "NONE"
-        try:
-            prompt = f"""Extract a concise, topic-specific thesis working title (<=12 words).
-    If there is no real topic (e.g., generic commands like "create thesis outline/structure",
-    "outline erstellt", "OUTLINE_READY"), answer EXACTLY: NONE.
+        # No generic fallback
+        return context
 
-    User text:
-    {user_input}
+    def _has_enough_info(self, ctx: UserContext) -> bool:
+        """
+        Minimal requirement: a working title must be present.
+        """
+        return bool(getattr(ctx, "working_title", None))
 
-    Valid title examples:
-    - "AI-Assisted Triage in Emergency Departments"
-    - "Federated Learning for Privacy-Preserving Medical Imaging"
-    - "Bias Auditing of ICU Risk Scores Using Counterfactual Evaluation"
+    def _get_next_question(self, ctx: UserContext) -> str:
+        """
+        Ask specifically for the title/topic when missing.
+        """
+        if not getattr(ctx, "working_title", None):
+            return "What is your working title or precise topic?"
+        return ""  # nothing to ask
 
-    Invalid (return NONE):
-    - "create thesis outline"
-    - "create thesis structure"
-    - "outline erstellt"
-    - "OUTLINE_READY"
-    - "please help with outline"
-    - "make an outline"
-    """
-            messages = [
-                {"role": "system", "content": "Return only the title or NONE. Be strict."},
-                {"role": "user", "content": prompt},
-            ]
-            out = self.client.chat_completion(messages, temperature=0.1, max_tokens=24)
-            if out:
-                out = out.strip().strip('"')
-                if out and out.upper() != "NONE" and not self._is_generic_request(out):
-                    return out
-        except Exception:
-            pass
+    def _is_generic_request(self, text: str) -> bool:
+        """
+        Detects generic outline requests (EN/DE), including short questions like
+        "can you create a thesis outline?" to avoid treating them as titles.
+        """
+        if not text:
+            return True
+        t = text.strip().lower()
 
+        generic_patterns = [
+            r"^\s*(can|could|would|will|please|pls)\s+(you\s+)?(create|make|generate|produce|build|write|prepare|design)\s+(a|an|the)?\s*(thesis\s+)?(outline|structure)s?\s*\??\s*$",
+            r"^\s*(create|make|generate|produce|build|write|prepare|design)\s+(a|an|the)?\s*(thesis\s+)?(outline|structure)s?\s*\??\s*$",
+            r"^\s*(please\s+)?help( me)?\s+(with\s+)?(an|a|the)?\s*(thesis\s+)?(outline|structure)\s*\??\s*$",
+            r"^\s*(kannst du|könntest du|würdest du|bitte)\s+(eine?n?\s+)?(thesis\s+)?(gliederung|struktur|disposition|outline)\s+(erstellen|machen|generieren|bauen|schreiben)\s*\??\s*$",
+            r"^\s*(erstelle|erstellen sie|mach|mache|generiere|baue|schreibe)\s+(eine?n?\s+)?(thesis\s+)?(gliederung|struktur|disposition|outline)\s*\??\s*$",
+            r"^\s*(hilfe|bitte)\s+.*\b(gliederung|struktur|disposition|outline)\b.*$",
+            r"^\s*(thesis\s+)?(outline|structure|gliederung|struktur|disposition)\s*\??\s*$",
+            r"^\s*outline\s*\??\s*$",
+            r"^\s*structure\s*\??\s*$",
+            r"^\s*outline_ready\s*$",
+            r"^\s*outline erstellt\.?\s*$",
+        ]
+        if any(re.search(p, t) for p in generic_patterns):
+            return True
+
+        # Short question with "outline/gliederung/struktur/disposition" → generic
+        if ("outline" in t or "gliederung" in t or "struktur" in t or "disposition" in t) and t.endswith("?") and len(t) <= 60:
+            return True
+
+        return False
+
+    def _extract_title_from_command_phrase(self, text: str) -> Optional[str]:
+        """
+        Extract the title from command phrases like 'create outline for "<TITLE>"'.
+        Covers EN + DE variants. Returns None if no title can be detected.
+        """
+        if not text:
+            return None
+        t = text.strip()
+
+        patterns = [
+            # EN: "create/make/generate ... outline for <title>"
+            r'^\s*(?:please\s+)?(?:can|could|would|will)?\s*(?:you\s+)?'
+            r'(?:create|make|generate|write|prepare|design|build)\s+'
+            r'(?:an?\s+)?(?:thesis\s+)?(?:outline|structure)\s*'
+            r'(?:for|on|about)\s*[:\-]?\s*[\"“]?(.+?)[\"”]?\s*$',
+
+            # EN: "create outline: <title>" or "create outline <title>"
+            r'^\s*(?:create|make|generate|write|prepare|design|build)\s+'
+            r'(?:an?\s+)?(?:thesis\s+)?(?:outline|structure)\s*[:\-]?\s*[\"“]?(.+?)[\"”]?\s*$',
+
+            # EN short: "outline for <title>"
+            r'^\s*(?:outline|structure)\s*(?:for|on|about)\s*[:\-]?\s*[\"“]?(.+?)[\"”]?\s*$',
+
+            # DE: "erstelle/erstellen sie/generiere ... gliederung/struktur für <title>"
+            r'^\s*(?:erstelle|erstellen sie|generiere|mach|mache|baue|schreibe)\s+'
+            r'(?:eine?n?\s+)?(?:gliederung|struktur|outline|disposition)\s*'
+            r'(?:für|zu|über)\s*[:\-]?\s*[\"“]?(.+?)[\"”]?\s*$',
+
+            # DE short: "gliederung für <title>"
+            r'^\s*(?:gliederung|struktur|outline|disposition)\s*'
+            r'(?:für|zu|über)\s*[:\-]?\s*[\"“]?(.+?)[\"”]?\s*$',
+        ]
+
+        for p in patterns:
+            m = re.match(p, t, flags=re.IGNORECASE)
+            if m:
+                cand = m.group(1).strip().strip('"\''"“”")
+                # Clean minor boilerplate like leading "for:"/"für:"
+                cand = re.sub(r'^\s*(for|für|zu|about|on)\s*[:\-]\s*', '', cand, flags=re.I).strip()
+                if cand and not self._is_generic_request(cand):
+                    return cand
         return None
 
+    # ---------- Helpers: generation, parsing, persistence ----------
 
-    def _generate_outline_markdown(self, title: str, research_summaries: Optional[List], options: dict) -> str:
+    def _generate_outline_markdown(
+        self,
+        title: str,
+        research_summaries: Optional[List],
+        options: dict,
+        context: Optional[UserContext] = None
+    ) -> str:
         """
-        Ein LLM-Call, der NUR Markdown-Headings zurückgibt. (wie du es bereits hattest)
+        Single LLM call that returns ONLY Markdown headings.
         """
         sys = "Return only Markdown headings (# for chapters, ## for sections). No extra prose."
         user = f"""You are an expert thesis architect. Design a rigorous, logically flowing thesis outline.
@@ -233,7 +336,7 @@ FORMAT EXAMPLE (shape only):
 
     def _parse_outline_md_to_model(self, title: str, md: str) -> ThesisOutline:
         """
-        Sehr toleranter Parser für das simple # / ## Schema.
+        Tolerant parser for a simple # / ## heading schema.
         """
         chapters: List[OutlineChapter] = []
         current: Optional[OutlineChapter] = None
@@ -242,26 +345,26 @@ FORMAT EXAMPLE (shape only):
             s = line.strip()
             if not s:
                 continue
-            if s.startswith("# "):  # Kapitel
+            if s.startswith("# "):  # chapter
                 if current:
                     chapters.append(current)
                 chap_title = s[2:].strip()
                 current = OutlineChapter(title=chap_title, sections=[])
-            elif s.startswith("## "):  # Abschnitt
+            elif s.startswith("## "):  # section
                 if not current:
-                    # Falls der LLM mit ## startet, lege ein Dummy-Kapitel an
+                    # If markdown starts with a section, create a dummy chapter
                     current = OutlineChapter(title="Chapter 1", sections=[])
                 sec_title = s[3:].strip()
-                # Optionale Nummer entkoppeln (1.1 foo -> foo)
+                # Detach optional numbering (e.g., "1.1 foo" -> "foo")
                 sec_title = re.sub(r'^\d+(\.\d+)*\s*', '', sec_title).strip()
                 current.sections.append(OutlineSection(title=sec_title))
-            # alles andere ignorieren (keine Fließtexte erwartet)
+            # ignore everything else (no body text expected)
 
         if current:
             chapters.append(current)
 
         return ThesisOutline(title=title, chapters=chapters)
-    
+
     def _thesis_to_outline_section(self, thesis: ThesisOutline) -> OutlineSection:
         return OutlineSection(
             title=thesis.title,
@@ -273,22 +376,7 @@ FORMAT EXAMPLE (shape only):
                 for ch in (thesis.chapters or [])
             ]
         )
-    
-    def _is_generic_request(self, text: str) -> bool:
-        if not text:
-            return True
-        t = text.strip().lower()
 
-        generic_patterns = [
-            r"^\s*create (a )?(thesis )?(outline|structure)\s*$",
-            r"^\s*make (an )?(outline|structure)\s*$",
-            r"^\s*generate (an )?(outline|structure)\s*$",
-            r"^\s*thesis (outline|structure)\s*$",
-            r"^\s*outline\s*$",
-            r"^\s*structure\s*$",
-            r"^\s*outline erstellt\.?\s*$",
-            r"^\s*outline_ready\s*$",
-            r"^\s*please help( me)? (with )?(an )?(outline|structure)\s*$",
-            r".*\bhilfe\b.*\b(gliederung|outline|struktur)\b.*",
-        ]
-        return any(re.search(p, t) for p in generic_patterns)
+    def _save_outline(self, title: str, model: ThesisOutline, markdown: str):
+        outline_section = self._thesis_to_outline_section(model)
+        return save_outline(outline=outline_section, topic=title)

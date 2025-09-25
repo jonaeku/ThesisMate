@@ -14,7 +14,7 @@ from src.models.models import UserContext
 from src.utils.config import get_env
 from src.utils.logging import get_logger
 from src.utils.openrouter_client import OpenRouterClient
-from src.utils.gemini_client import GeminiClient
+#from src.utils.gemini_client import GeminiClient
 
 logger = get_logger(__name__)
 
@@ -183,7 +183,8 @@ class Orchestrator:
             "### Actionable Revisions",
             "🧪 **Review (inline passage)**",
             "🔎 **Review für ",
-            "🧵 **Gesamt-Review"
+            "🧵 **Gesamt-Review",
+            "🧵 **Overall-Review"
         ]
         
         return any(indicator in message for indicator in completion_indicators)
@@ -242,14 +243,14 @@ Available agents:
 - topic_scout: Finds thesis topics, research areas, handles field/interest info
 - research_agent: Searches papers, literature analysis  
 - structure_agent: Creates outlines, thesis structure
-- writing_assistant: Helps with writing content
+- writing_assistant: Helps with writing content and style questions
 - reviewer_agent: Reviews and gives feedback
 
 ROUTING RULES:
 - Topic suggestions, research areas, field/interest info → topic_scout
 - Paper search, literature analysis → research_agent  
 - Thesis structure, outlines → structure_agent
-- Writing content, drafting → writing_assistant
+- Writing content, drafting, style → writing_assistant
 - Review, feedback → reviewer_agent
 
 Respond with just the agent name (e.g., "topic_scout")."""

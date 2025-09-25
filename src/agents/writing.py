@@ -3,13 +3,13 @@ import hashlib
 import os
 import json
 import glob
-from typing import Optional, List, Tuple, Dict
+from typing import Optional, List, Tuple
 import re
 from src.utils.logging import get_logger
 from src.utils.openrouter_client import OpenRouterClient
 from src.utils.storage import (
     _strip_leading_enumeration, list_guardrail_files, load_guardrails, load_writing_style, save_guardrail_files, save_guardrails,
-    save_passage, load_latest_outline, save_writing_style
+    save_passage, load_latest_outline
 )
 from src.models.models import (
     UserContext,
@@ -35,7 +35,7 @@ class WritingAssistantAgent:
     # ---------- CAPABILITY ----------
     def can_handle_request(self, user_input: str, context: UserContext) -> AgentCapabilityAssessment:
         """
-        Behandelt Eingaben, die auf das Verfassen/Überarbeiten von Absätzen/Phrasen/Abschnitten hindeuten.
+        Fast LLM check whether this is a drafting/editing request (YES/NO).
         """
         try:
             prompt = f"""You are a Writing Agent for academic theses.
@@ -77,219 +77,238 @@ Answer ONLY "YES" or "NO" and a short reason."""
         options: Optional[dict] = None,
     ) -> AgentResponse:
         """
-        Nimmt Keywords/Entwurf entgegen → erzeugt Absatz in akademischem Stil mit Citations.
-        Persistiert Style/Guardrails in data/thesis/config und speichert Passagen im chapter-Ordner.
+        Topic-Agent style:
+        1) Enrich context
+        2) Capability check
+        3) Gate: Do we have enough info? → ask a targeted question
+        4) Draft paragraph
+        5) (optional) Validations
+        6) Format & return
         """
         logger.info(f"[WritingAgent] processing: {user_input[:120]}")
         options = options or {}
 
-        # 0) Style/Guardrails laden oder Defaults aus Context/Options übernehmen
-        style = context.writing_style or load_writing_style() or self._default_style(context)
-        guard = context.guardrails or load_guardrails() or self._default_guardrails()
-        
+        try:
 
-         # ---- NEW: globaler style.json Look-Up (hart verpflichtend) ----
-        style_json = get_global_style()  # {"style_guide": "...", "citation_style": "APA"}
-        # setze Zitationsstil aus style.json als Quelle der Wahrheit
-        if style_json.get("citation_style"):
-            try:
-                # falls dein WritingStyleConfig Feld heißt 'citation_style'
-                style.citation_style = style_json["citation_style"]
-            except Exception:
-                pass
-        # Merke den style_guide-Text separat für den Prompt (falls WritingStyleConfig kein Feld hat)
-        style_guide_text = style_json.get("style_guide", "")
+             # --- 0) FAST PATH: handle style commands up-front ---
+        # do NOT depend on outline/targets; these commands should always work
+            style_json = get_global_style() or {}
+            style_for_cmds = (
+                getattr(context, "writing_style", None)
+                or load_writing_style()
+                or self._default_style(context)
+            )
+            cmd_resp = self._handle_style_commands(user_input, style_json, style_for_cmds)
+            if cmd_resp:
+                return cmd_resp
+            # ---------------- 1) Enrich context ----------------
+            updated_ctx = self._update_context_from_input_basic(user_input, context)
 
-        style_cmd_resp = self._handle_style_commands(user_input, style_json, style)
-        if style_cmd_resp:
-            # optional: WritingStyleConfig persistieren, damit UI auch konsistent ist
-          #  try:
-            #    save_writing_style(style)
-           # except Exception:
-            #    pass
-            return style_cmd_resp
+            # ---------------- 2) Capability check ---------------
+            assessment = None
+            if hasattr(self, "can_handle_request"):
+                try:
+                    assessment = self.can_handle_request(user_input, updated_ctx)
+                except Exception as e:
+                    logger.warning(f"[WritingAgent] can_handle_request failed, assuming YES: {e}")
 
-         # --- NEU: eingehende Uploads nach guardrails/ speichern ---
-        incoming = options.get("files") or []
-        # Unterstütze beide Formen: Dicts oder Tupel
-        normalized: list[tuple[str, bytes]] = []
-        for f in incoming:
-            if isinstance(f, dict) and "name" in f and "content" in f:
-                normalized.append((f["name"], f["content"]))
-            elif isinstance(f, (list, tuple)) and len(f) == 2:
-                normalized.append((f[0], f[1]))
-
-        saved_msg = ""
-        if normalized:
-            try:
-                # Optional: erlaubte Endungen zentral definieren
-                allowed = getattr(guard, "allowed_extensions", None)  # z.B. ['.pdf','.docx','.md','.txt']
-                saved_paths = save_guardrail_files(normalized, allowed_ext=allowed, max_mb=25)
-                # Für spätere Verwendung im Kontext ablegen (optional)
-                context.guardrail_files = list_guardrail_files()
-                saved_msg = f"📁 {len(saved_paths)} Datei(en) in guardrails gespeichert."
-            except Exception as e:
-                # Fehlermeldung zurückgeben/abbrechen
+            if assessment and not assessment.can_handle:
                 return AgentResponse(
                     success=False,
                     agent_name=self.agent_name,
-                    instructions=[],
-                    user_message=f"Upload fehlgeschlagen: {e}",
-                    updated_context=context
+                    capability_assessment=assessment,
+                    user_message=f"I can't help with this request. {assessment.reasoning}",
+                    updated_context=updated_ctx,
                 )
 
-        seeds = self._extract_seed_content(user_input)
+            # ---------------- 3) Gate: Do we have enough info? --
+            # Minimal requirements to write:
+            #   a) outline present
+            #   b) concrete target (chapter/section)
+            #   c) seeds (keywords/draft)
+            outline = updated_ctx.latest_outline
+            seeds = self._extract_seed_content(user_input)
 
-        # 1) Outline muss vorhanden sein, um Ablageziel (Kapitel/Section) zu kennen
-        outline = context.latest_outline
-        if not outline:
-            sec = load_latest_outline()  # <- lädt OutlineSection (Root) aus storage
-            if sec:
-                outline = self._section_to_thesis_outline(sec)  # <- konvertieren
-                context.latest_outline = outline  # im Kontext behalten
+            target = None
+            if outline:
+                target = self._extract_target_location(user_input, outline)
+                if target is None:
+                    # optionally allow loose extraction as a second try
+                    target = self._extract_target_location_loose(user_input)
 
+            has_all, _missing = self._has_enough_info_writing(outline=outline, target=target, seeds=seeds)
+            if not has_all:
+                question = self._get_next_question_writing(updated_ctx, outline=outline, target=target, seeds=seeds)
+                instr = AgentInstruction(
+                    requesting_agent=self.agent_name,
+                    action_type="ask_user",
+                    target="user",
+                    message=question,
+                    reasoning="Need this information to write a suitable paragraph."
+                )
+                return AgentResponse(
+                    success=False,
+                    agent_name=self.agent_name,
+                    instructions=[instr],
+                    user_message=question,
+                    updated_context=updated_ctx
+                )
 
-         # 2) Wenn keine Outline existiert: versuche lockere Zielerkennung
-        target = None
-        if not outline:
-                # Sonderfall 1: User will Outline erstellen → Supervisor soll routen
-                if re.search(r"\b(create|build|make)\s+(an?\s+)?outline\b", user_input, flags=re.IGNORECASE) or \
-                re.search(r"\b(erstelle|erzeuge|baue)\s+eine?\s+gl(i?)ederung\b", user_input, flags=re.IGNORECASE):
-                    context.pending_agent = "structure_agent"
-                    context.pending_request = "create outline"
-                    msg = "Alles klar — ich leite zur Outline-Erstellung weiter. Bitte gib mir noch deinen Arbeitstitel/Thema."
-                    # Wir geben bewusst eine klare Nachricht zurück, die 'outline' enthält,
-                    # damit dein Supervisor/Keyword-Routing den Structure-Agent wählt.
+            # ---------------- 4) Draft (existing pipeline) -------
+            # 4.0 Load style/guardrails
+            style = updated_ctx.writing_style or load_writing_style() or self._default_style(updated_ctx)
+            guard = updated_ctx.guardrails or load_guardrails() or self._default_guardrails()
+
+            # 4.1 Enforce global style (if present)
+            style_json = get_global_style()  # {"style_guide": "...", "citation_style": "APA"}
+            if style_json.get("citation_style"):
+                try:
+                    style.citation_style = style_json["citation_style"]
+                except Exception:
+                    pass
+            style_guide_text = style_json.get("style_guide", "")
+
+            # 4.2 Style commands in user_input (early exit if matched)
+            style_cmd_resp = self._handle_style_commands(user_input, style_json, style)
+            if style_cmd_resp:
+                return style_cmd_resp
+
+            # 4.3 Uploads (guardrails)
+            incoming = options.get("files") or []
+            normalized: list[tuple[str, bytes]] = []
+            for f in incoming:
+                if isinstance(f, dict) and "name" in f and "content" in f:
+                    normalized.append((f["name"], f["content"]))
+                elif isinstance(f, (list, tuple)) and len(f) == 2:
+                    normalized.append((f[0], f[1]))
+            saved_msg = ""
+            if normalized:
+                try:
+                    allowed = getattr(guard, "allowed_extensions", None)
+                    saved_paths = save_guardrail_files(normalized, allowed_ext=allowed, max_mb=25)
+                    updated_ctx.guardrail_files = list_guardrail_files()
+                    saved_msg = f"📁 {len(saved_paths)} file(s) saved to guardrails."
+                except Exception as e:
                     return AgentResponse(
                         success=False,
                         agent_name=self.agent_name,
-                        instructions=[AgentInstruction(
-                            requesting_agent=self.agent_name,
-                            action_type="ask_user",
-                            target="user",
-                            message=msg,
-                            reasoning="User asked to create outline; route to structure_agent next."
-                        )],
-                        user_message=msg,
-                        updated_context=context
+                        instructions=[],
+                        user_message=f"Upload failed: {e}",
+                        updated_context=updated_ctx
                     )
 
-                # Ansonsten: präzise Rückfrage (nur einmal), nicht in eine Schleife geraten
-                target = self._extract_target_location_loose(user_input)
-                if target:
-                    ch_idx, sec_idx, sec_title = target
-                    outline = self._synthesize_outline_from_target(ch_idx, sec_idx, sec_title)
-                    context.latest_outline = outline
-                else:
-                    q = ("Ich brauche ein Ziel in deiner Arbeit. Nenne z. B. **'4.1 Titel, keywords: …'** "
-                        "oder erstelle zuerst eine Gliederung mit *create outline: <Thema>*.")
-                    return AgentResponse(
-                        success=False,
-                        agent_name=self.agent_name,
-                        instructions=[AgentInstruction(
-                            requesting_agent=self.agent_name,
-                            action_type="ask_user",
-                            target="user",
-                            message=q,
-                            reasoning="No outline and no loose chapter/section found."
-                        )],
-                        user_message=q,
-                        updated_context=context
-                    )
+            # 4.4 Target info
+            ch_idx, sec_idx, sec_title = target
+            section_name = sec_title or outline.chapters[ch_idx - 1].title
 
-        # 2.1) Ziel (Kapitel/Section) aus dem User-Input herausfinden oder Rückfrage stellen
-        target = self._extract_target_location(user_input, outline)
-        if target is None:
-            # nutzer fragen
-           # chapter_titles = [f"{i+1}. {c.title}" for i, c in enumerate(outline.chapters)]
-            menu = self._format_outline_for_prompt(outline)
-            q = "Für welchen Abschnitt soll ich schreiben? Antworte z. B. mit *Kapitel 3.2* oder einem Abschnittstitel.\n" + menu
-            instr = AgentInstruction(
-                requesting_agent=self.agent_name,
-                action_type="ask_user",
-                target="user",
-                message=q,
-                reasoning="Need a concrete chapter/section to place the paragraph."
+            # 4.5 (Optional) Update configs from input
+            style, guard, style_changed = self._maybe_update_configs_from_input(user_input, style, guard)
+            if style_changed:
+                updated_ctx.writing_style = style
+                updated_ctx.guardrails = guard
+
+            # 4.6 Bib keys & sources
+            bib_keys = self._collect_bib_keys_from_input(user_input)
+            all_papers = self._load_papers_from_disk()
+            topic_hint = getattr(updated_ctx, "chosen_topic", None) or getattr(updated_ctx, "topic_title", None) or ""
+            best_papers = self._pick_best_papers(all_papers, topic_hint=topic_hint, seeds=seeds, section_title=section_name)
+            sources_txt = self._format_sources_for_prompt(best_papers)
+
+            # 4.7 LLM draft
+            paragraph_md, used_citations = self._draft_paragraph(
+                seeds, style, guard, outline, ch_idx, sec_idx, sec_title, bib_keys, style_guide_text, sources_txt
             )
-            return AgentResponse(success=False, agent_name=self.agent_name, instructions=[instr], user_message=q, updated_context=context)
 
-        ch_idx, sec_idx, sec_title = target
-        section_name = sec_title or outline.chapters[ch_idx-1].title
+            # 4.8 Apply local guardrails
+            paragraph_md = self._apply_local_guardrails(paragraph_md, style, guard)
 
-        # 3) Input-Inhalt (Keywords/Entwurf) extrahieren
-        if not seeds:
-            q = "Sende bitte Stichwörter oder einen Grobentwurf für den Absatz, z. B.: `Keywords: federated learning, radiology, privacy`."
-            instr = AgentInstruction(
-                requesting_agent=self.agent_name, action_type="ask_user", target="user", message=q,
-                reasoning="Need seeds (keywords/draft) to write a paragraph."
+            # 4.9 Persist
+            draft = DraftPassage(
+                chapter_index=ch_idx,
+                section_index=sec_idx,
+                title=sec_title,
+                content_markdown=paragraph_md,
+                citations=used_citations
             )
-            return AgentResponse(success=False, agent_name=self.agent_name, instructions=[instr], user_message=q, updated_context=context)
+            merge = (options or {}).get("merge_strategy", "append")
+            m = re.search(r"\bmerge\s*=\s*(append|overwrite|version|revise)\b", user_input, flags=re.I)
+            if m:
+                merge = m.group(1).lower()
 
-        # 4) Optional: Style / Guardrails aus user_input aktualisieren
-        style, guard, style_changed = self._maybe_update_configs_from_input(user_input, style, guard)
-        if style_changed:
-           # try:
-               # save_writing_style(style)
-               # save_guardrails(guard)
-            #except Exception as e:
-            #    logger.warning(f"Could not persist writing configs: {e}")
-            context.writing_style = style
-            context.guardrails = guard
+            saved = save_passage(outline, draft, merge_strategy=merge)
 
-        # 5) Research/Bib-Unterstützung (leichtgewichtig)
-        bib_keys = self._collect_bib_keys_from_input(user_input)
-       # bib_meta = self._lookup_bib_entries(bib_keys)
-        # Wenn ResearchAgent vorhanden: (Optional) stützen, hier nur placeholder:
-        # if self.research_tool and guard.require_citations_for_claims: ...
+            # ---------------- 5) UI formatting -------------------
+            title_line = self._make_title_line(ch_idx, sec_idx, sec_title or outline.chapters[ch_idx - 1].title)
+            ui = (f"✍️ **New paragraph saved** → `{saved['file']}`\n\n"
+                f"{title_line}\n\n"
+                f"{paragraph_md}")
+            if saved_msg:
+                ui = saved_msg + "\n\n" + ui
 
-        topic_hint = getattr(context, "chosen_topic", None) or getattr(context, "topic_title", None) or ""
+            # ---------------- 6) Return --------------------------
+            return AgentResponse(
+                success=True,
+                agent_name=self.agent_name,
+                result=draft,
+                user_message=ui,
+                updated_context=updated_ctx
+            )
 
-        # Papers laden & auswählen
-        all_papers = self._load_papers_from_disk()
-        best_papers = self._pick_best_papers(all_papers, topic_hint=topic_hint, seeds=seeds, section_title=section_name)
+        except Exception as e:
+            logger.error(f"[WritingAgent] Error: {e}")
+            return AgentResponse(
+                success=False,
+                agent_name=self.agent_name,
+                user_message=f"An error occurred: {e}",
+                updated_context=context,
+            )
 
-        sources_txt = self._format_sources_for_prompt(best_papers)
-
-        # 6) LLM-Call: Paragraph generieren im gewählten Stil
-        paragraph_md, used_citations = self._draft_paragraph(seeds, style, guard, outline, ch_idx, sec_idx, sec_title, bib_keys, style_guide_text, sources_txt)
-
-        # 7) Guardrails-Nachkontrolle (leicht, lokal)
-        paragraph_md = self._apply_local_guardrails(paragraph_md, style, guard)
-
-        # 8) Speichern
-        draft = DraftPassage(
-            chapter_index=ch_idx,
-            section_index=sec_idx,
-            title=sec_title,
-            content_markdown=paragraph_md,
-            citations=used_citations
-        )
-        merge = (options or {}).get("merge_strategy", "append")
-
-        m = re.search(r"\bmerge\s*=\s*(append|overwrite|version|revise)\b", user_input, flags=re.I)
-        if m:
-            merge = m.group(1).lower()
-
-        saved = save_passage(outline, draft, merge_strategy=merge)
-
-        title_line = self._make_title_line(ch_idx, sec_idx, sec_title or outline.chapters[ch_idx-1].title)
-        ui = (f"✍️ **Neuer Absatz gespeichert** → `{saved['file']}`\n\n"
-            f"{title_line}\n\n"
-            f"{paragraph_md}")
-        
-        if saved_msg:
-            ui = saved_msg + "\n\n" + ui
-
-        return AgentResponse(
-            success=True,
-            agent_name=self.agent_name,
-            result=draft,
-            user_message=ui,
-            updated_context=context
-        )
 
     # ---------- Helpers ----------
-   
+
+    def _has_enough_info_writing(self, *, outline, target, seeds: str) -> tuple[bool, dict]:
+        """
+        Returns (ok, missing_dict) where missing_dict flags which pieces are missing.
+        ok == True only if outline, target and seeds are all present.
+        """
+        missing = {
+            "outline": outline is None,
+            "target": target is None,
+            "seeds": not bool(seeds and seeds.strip()),
+        }
+        ok = not any(missing.values())
+        return ok, missing
+
+
+    def _get_next_question_writing(self, context: UserContext, *, outline, target, seeds: str) -> str:
+        """
+        Asks exactly for the next missing piece in a user-friendly order:
+        1) outline, 2) target (chapter/section), 3) seeds.
+        """
+        if outline is None:
+            return "I need your thesis outline to know where the text belongs. Please create or load an outline first."
+
+        if target is None:
+            menu = self._format_outline_for_prompt(context.latest_outline) if getattr(context, "latest_outline", None) else ""
+            return ("Which section should I write for? Reply with a number like **3.2** or a section title.\n" + menu).strip()
+
+        if not seeds or not seeds.strip():
+            return "Please send keywords or a rough draft for the paragraph, e.g.: `Keywords: federated learning, radiology, privacy`."
+
+        # Should not be reached, but keep a safe fallback:
+        return "What exactly should I write? Please specify section and a few keywords."
+
+    def _update_context_from_input_basic(self, user_input: str, context: UserContext) -> UserContext:
+        """
+        Minimal enrichment (Topic-Agent style):
+        - If no outline is in context, try loading the latest saved one.
+        - Otherwise leave context unchanged.
+        """
+        if not getattr(context, "latest_outline", None):
+            sec = load_latest_outline()
+            if sec:
+                context.latest_outline = self._section_to_thesis_outline(sec)
+        return context
 
     def _tokenize(self, text: str) -> set[str]:
         t = (text or "").lower()
@@ -297,7 +316,9 @@ Answer ONLY "YES" or "NO" and a short reason."""
         return set(re.findall(r"[a-zA-Zäöüß0-9\-]+", t))
 
     def _load_papers_from_disk(self) -> list[dict]:
-        """Liest alle papers_*.json (List-of-dicts ODER JSONL) rekursiv aus data/…"""
+        """
+        Read all papers_*.json (list-of-dicts OR JSONL) recursively from data/…
+        """
         items: list[dict] = []
         for path in glob.glob(PAPERS_DIR_GLOB, recursive=True):
             if "papers_" not in os.path.basename(path):
@@ -323,9 +344,9 @@ Answer ONLY "YES" or "NO" and a short reason."""
 
     def _score_paper_for_section(self, paper: dict, topic_hint: str, seeds: str, section_title: str) -> float:
         """
-        Kombinierter Score:
-        - 0.7 * gespeicherter relevance_score (0..1, fallback 0.3)
-        - 0.3 * Keyword-Overlap (0..1) mit Topic/Seeds/Section
+        Combined score:
+        - 0.7 * stored relevance_score (0..1, fallback 0.3)
+        - 0.3 * keyword overlap (0..1) with topic/seeds/section
         """
         base = float(paper.get("relevance_score") or 0.3)
         text = " ".join([
@@ -345,7 +366,9 @@ Answer ONLY "YES" or "NO" and a short reason."""
 
     def _pick_best_papers(self, all_papers: list[dict], topic_hint: str, seeds: str, section_title: str,
                         min_score: float = 0.45, top_k: int = 6) -> list[dict]:
-        """Filter + Sortierung nach kombinierten Score."""
+        """
+        Filter + sort by combined score and return top_k.
+        """
         scored = []
         for p in all_papers:
             s = self._score_paper_for_section(p, topic_hint, seeds, section_title)
@@ -367,27 +390,14 @@ Answer ONLY "YES" or "NO" and a short reason."""
             lines.append(f"- {author} ({year}): {title}" + (f" — {url}" if url else ""))
         return "\n".join(lines)
 
-        # def _lookup_bib_entries(self, keys: List[str]) -> List[Dict]:
-        #     """
-        #     Fragt – falls vorhanden – den ResearchAgent nach Metadaten für BibTeX-Keys.
-        #     """
-        #     if not keys or not self.research_tool:
-        #         return []
-        #     try:
-        #         return self.research_tool.lookup_bib_keys(keys) or []
-        #     except Exception as e:
-        #         logger.warning(f"lookup_bib_keys failed: {e}")
-        #         return []
-
-
     def _handle_style_commands(self, user_input: str, style_json: dict, style: WritingStyleConfig
     ) -> Optional[AgentResponse]:
         """
-        Erlaubt:
+        Supports:
         - 'style show'
         - 'style set citation=<APA|MLA|Chicago|IEEE|Harvard>'
-        - 'style set guide: <freitext>' oder 'style set guide=<freitext>'
-        Gibt bei Treffer eine fertige AgentResponse zurück (success=True) – kein Pending!
+        - 'style set guide: <free text>' or 'style set guide=<free text>'
+        Returns a fully-formed AgentResponse (success=True) if matched; otherwise None.
         """
         t = (user_input or "").strip()
 
@@ -441,7 +451,7 @@ Answer ONLY "YES" or "NO" and a short reason."""
                 return AgentResponse(
                     success=False,
                     agent_name=self.agent_name,
-                    user_message=f"Unbekannter citation_style: {new_cit}. Erlaubt: APA, MLA, Chicago, IEEE, Harvard."
+                    user_message=f"Unknown citation_style: {new_cit}. Allowed: APA, MLA, Chicago, IEEE, Harvard."
                 )
 
         # --- SET guide (":" oder "=") ---
@@ -454,12 +464,12 @@ Answer ONLY "YES" or "NO" and a short reason."""
                 return AgentResponse(
                     success=True,
                     agent_name=self.agent_name,
-                    user_message="✅ style_guide aktualisiert.\n\n" + new_guide
+                    user_message="✅ style_guide updated.\n\n" + new_guide
                 )
             return AgentResponse(
                 success=False,
                 agent_name=self.agent_name,
-                user_message="Kein style_guide Text gefunden. Nutze z. B.: `style set guide: Formal, concise …`"
+                user_message="No style_guide text found. Use something like: `style set guide: Formal, concise …`"
             )
 
         return None
@@ -471,7 +481,10 @@ Answer ONLY "YES" or "NO" and a short reason."""
         return f"{hashes} Chapter {ch_idx}.0: {title}"
 
     def _format_outline_for_prompt(self, outline: ThesisOutline) -> str:
-        """Zeigt Kapitel + Unterkapitel, nummeriert als 1.0 / 1.1, entfernt Nummern im Titel selbst."""
+        """
+        Show chapters + subsections, numbered as 1.0 / 1.1; strips leading numbers from titles.
+        Returned as a code block to preserve indentation in chat UIs.
+        """
         lines = []
         for i, ch in enumerate(outline.chapters or [], 1):
             ch_title = _strip_leading_enumeration(getattr(ch, "title", "") or f"Chapter {i}")
@@ -505,8 +518,11 @@ Answer ONLY "YES" or "NO" and a short reason."""
 
     def _extract_target_location(self, text: str, outline: ThesisOutline) -> Optional[Tuple[int, Optional[int], Optional[str]]]:
         """
-        Erkenne Muster: 'Kapitel 3.2', 'chapter 2', '# 4.1', oder Section-Titel.
-        Rückgabe: (chapter_index, section_index or None, section_title or None)
+        Loose extraction of (chapter, section, optional title) from free text, e.g.:
+        - "4.1 Something, keywords: ..."
+        - "Chapter 3.2 Federated Learning in Radiology"
+        - "chapter 2 Related Work"
+        Return: (chapter_index, section_index|None, extracted_title|None)
         """
         t = (text or "").strip().lower()
 
@@ -546,8 +562,8 @@ Answer ONLY "YES" or "NO" and a short reason."""
 
     def _extract_seed_content(self, text: str) -> str:
         """
-        Hol Keywords/Entwurf: akzeptiere `Keywords: ...`, `Draft: ...`,
-        ansonsten gesamten Input als Seed (ohne Steuerphrasen).
+        Extract seeds (keywords/draft). Accepts patterns like `Keywords: ...`, `Draft: ...`,
+        otherwise returns the full input without steering phrases.
         """
         m = re.search(r"(?:keywords?|stichw(?:örter)?|draft|entwurf)\s*[:：]\s*(.+)", text, flags=re.I)
         if m:
@@ -591,7 +607,7 @@ Answer ONLY "YES" or "NO" and a short reason."""
 
     def _collect_bib_keys_from_input(self, text: str) -> List[str]:
         """
-        Erlaubt Eingabe wie [@Smith2020; @Miller19]. Gibt Liste der Keys zurück.
+        Allowed [@Smith2020; @Miller19]. Returns list of Keys.
         """
         keys = re.findall(r"\[@([\w:-]+)\]", text)  # einzelne
         # Mehrfachtrenner ; oder , innerhalb [@a; @b]
@@ -610,9 +626,6 @@ Answer ONLY "YES" or "NO" and a short reason."""
         outline: ThesisOutline, ch_idx: int, sec_idx: Optional[int], sec_title: Optional[str],
         bib_keys: List[str], style_guide_text: str, sources_txt: str 
     ) -> Tuple[str, List[str]]:
-        """
-        Ein LLM-Aufruf, der 1 Absatz (oder kurzer Block) in Markdown erzeugt.
-        """
         lang = "German" if style.language == "de" else "English"
         section_hint = f"Chapter {ch_idx}" + (f".{sec_idx}" if sec_idx else "")
         section_name = sec_title or outline.chapters[ch_idx-1].title
@@ -685,8 +698,8 @@ STRICT OUTPUT RULES:
 
     def _read_guardrail_docs(self, max_chars: int = 8000) -> str:
         """
-        Liest *.md/*.txt aus data/thesis/guardrails, fasst sie zusammen,
-        kürzt sanft, cached per (pfad+mtime) Signatur.
+        Read *.md/*.txt from data/thesis/guardrails, concatenate them,
+        softly truncate for prompt safety, and cache by (path+mtime) signature.
         """
         try:
             files = list_guardrail_files()  # -> [absolute_pfade]
@@ -723,9 +736,7 @@ STRICT OUTPUT RULES:
 
         blob = "\n".join(parts).strip()
 
-        # Sanfte Kürzung (Prompt-Schutz)
         if len(blob) > max_chars:
-            # Priorisiere Überschriften & Aufzählungen; fällt zur harten Kürzung zurück
             lines = blob.splitlines()
             head = []
             bullets = []
@@ -747,12 +758,11 @@ STRICT OUTPUT RULES:
 
     def _extract_target_location_loose(self, text: str) -> Optional[tuple[int, Optional[int], Optional[str]]]:
         """
-        Erkennt Kapitel/Abschnitt + optionalen Titel aus Freitext, z.B.:
-        - "4.1 test, keywords: ..."
-        - "Kapitel 3.2 Federated Learning in Radiology"
+        Loose extraction of (chapter, section, optional title) from free text, e.g.:
+        - "4.1 Something, keywords: ..."
+        - "Chapter 3.2 Federated Learning in Radiology"
         - "chapter 2 Related Work"
-        
-        Rückgabe: (chapter_index, section_index|None, extracted_title|None)
+        Return: (chapter_index, section_index|None, extracted_title|None)
         """
         t = (text or "").strip()
 
@@ -792,36 +802,5 @@ STRICT OUTPUT RULES:
         return None
     
 
-    # --- NEU: synthetische Outline auf Basis der lockeren Zielerkennung ----------
-
-    def _synthesize_outline_from_target(self, ch_idx: int, sec_idx: Optional[int], title: Optional[str]) -> ThesisOutline:
-        """
-        Baut eine Minimal-Outline, die nur so groß ist, wie für die Ablage nötig.
-        - Kapitel 1..ch_idx werden angelegt (mit Platzhaltertiteln).
-        - Falls sec_idx gesetzt, werden Abschnitte 1..sec_idx angelegt.
-        - Der jeweils adressierte Titel wird mit 'title' überschrieben (Kapitel- oder Abschnittstitel).
-        """
-        chapters: list[OutlineChapter] = []
-        for i in range(1, ch_idx + 1):
-            ch_title = f"Chapter {i}"
-            ch = OutlineChapter(title=ch_title, sections=[])
-            chapters.append(ch)
-
-        target_ch = chapters[ch_idx - 1]
-
-        if sec_idx:
-            # Abschnitte anlegen
-            for j in range(1, sec_idx + 1):
-                sec_title = f"Section {ch_idx}.{j}"
-                target_ch.sections.append(OutlineSection(title=sec_title))
-            # Ziel-Abschnittstitel überschreiben, falls gegeben
-            if title:
-                target_ch.sections[sec_idx - 1].title = title
-        else:
-            # Kapitel-Titel überschreiben, falls gegeben
-            if title:
-                target_ch.title = title
-
-        return ThesisOutline(title="Thesis", chapters=chapters)
 
 
