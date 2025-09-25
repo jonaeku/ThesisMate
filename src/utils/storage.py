@@ -57,6 +57,24 @@ def load_conversation_state(filename: str = "data/conversation.json") -> Optiona
         print(f"Error loading conversation: {e}")
         return ConversationState()
 
+def save_research_papers(papers: List[Paper], topic: str) -> str:
+    """Save research papers to structured research directory"""
+    _ensure_dirs()
+    
+    # Create safe filename from topic
+    safe_topic = re.sub(r'[^\w\s-]', '', topic.strip())
+    safe_topic = re.sub(r'[\s_-]+', '_', safe_topic)
+    filename = f"papers_{safe_topic}.json"
+    filepath = os.path.join(RESEARCH_DIR, filename)
+    
+    try:
+        with open(filepath, 'w', encoding='utf-8') as f:
+            json.dump([paper.model_dump() for paper in papers], f, indent=2, ensure_ascii=False)
+        return filepath
+    except Exception as e:
+        print(f"Error saving research papers: {e}")
+        return ""
+
 def export_bibtex(papers: List[Paper]) -> str:
     """Export papers to BibTeX format"""
     bibtex_entries = []
@@ -241,10 +259,11 @@ THESIS_DIR = os.path.join(BASE_DIR, "thesis")
 CONFIG_DIR = os.path.join(THESIS_DIR, "config")
 CHAPTER_DIR = os.path.join(THESIS_DIR, "chapter")
 BIB_DIR = os.path.join(THESIS_DIR, "bib")
-GUARDRAILS_DIR = os.path.join(THESIS_DIR, "guardrails")  
+GUARDRAILS_DIR = os.path.join(THESIS_DIR, "guardrails")
+RESEARCH_DIR = os.path.join(THESIS_DIR, "research")
 
 def _ensure_dirs():
-    for d in [BASE_DIR, THESIS_DIR, CONFIG_DIR, CHAPTER_DIR, BIB_DIR, GUARDRAILS_DIR]:
+    for d in [BASE_DIR, THESIS_DIR, CONFIG_DIR, CHAPTER_DIR, BIB_DIR, GUARDRAILS_DIR, RESEARCH_DIR]:
         os.makedirs(d, exist_ok=True)
 
 _slug_rx = re.compile(r"[^\w\s-]", flags=re.UNICODE)

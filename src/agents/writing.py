@@ -22,7 +22,7 @@ from src.utils.style_store import get_style as get_global_style, save_style as s
 
 
 logger = get_logger(__name__)
-PAPERS_DIR_GLOB = "data/**/*.json"
+PAPERS_DIR_GLOB = "data/thesis/research/*.json"
 
 class WritingAssistantAgent:
     def __init__(self, research_tool=None):
@@ -798,7 +798,3 @@ STRICT OUTPUT RULES:
             return ch, None, title if title else None
 
         return None
-    
-
-
-

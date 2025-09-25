@@ -384,7 +384,7 @@ Examples:
             field = context.field or "the field"
             interests = ", ".join(context.interests) if context.interests else "the interests"
             
-            prompt = f"""Based on these real research papers, generate 4 specific thesis topics for a student in {field} interested in {interests}.
+            prompt = f"""Based on these real research papers, generate 3 specific thesis topics for a student in {field} interested in {interests}.
 
 Recent Research Papers:
 {papers_text}
@@ -494,7 +494,7 @@ Format as:
                 sample_papers=relevant_papers[:3]
             ))
         
-        return topics[:4]  # Limit to 4 topics
+        return topics[:3]  # Limit to 3 topics
 
     def _find_relevant_papers(self, topic_text: str, papers: List) -> List:
         """Find papers most relevant to a specific topic"""
