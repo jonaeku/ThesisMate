@@ -5,7 +5,7 @@ from src.models.models import (
 )
 from src.utils.custom_logging import get_logger
 from src.utils.academic_apis import search_papers
-from src.utils.storage import save_papers, load_papers
+from src.utils.storage import save_papers, load_papers, save_research_papers
 from src.utils.openrouter_client import OpenRouterClient
 
 
@@ -381,8 +381,10 @@ Search query:"""
             # Store collected papers
             self.collected_papers = scored_papers
             
-            # Save to storage
-            save_papers(scored_papers, f"data/papers_{topic.replace(' ', '_')}.json")
+            # Save to structured research directory
+            filepath = save_research_papers(scored_papers, topic)
+            if filepath:
+                logger.info(f"Papers saved to: {filepath}")
             
             logger.info(f"Collected {len(scored_papers)} papers for topic: {topic}")
             return scored_papers
