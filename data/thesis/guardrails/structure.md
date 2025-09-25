@@ -1,0 +1,31 @@
+- Kernidee prägnant herausarbeiten; Verzicht auf unnötige Füllsätze.
+- Viele verständliche Beispiele verwenden; wo sinnvoll auf Screenshots/Abbildungen verweisen (oder Platzhalter einfügen).
+- Nicht ständig „Abschlussarbeit/Prüfungsleistung“ erwähnen; stattdessen „vorliegende Arbeit“ verwenden.
+- Vorgaben zum Zitationsstil (z. B. APA/MLA/Harvard) konsequent einhalten.
+- Kapitel Einleitung (Kapitel 1):
+- Mit Motivation starten (typisches Problem/Pain Point schildern).
+- Ziele/Ergebnisse der Arbeit klar nennen (Mehrwert für die Leserschaft).
+- Umfeld/Firma/Abteilung/Projekt knapp vorstellen.
+- Aufbau der Arbeit ankündigen (für jedes Kapitel 2–3 inhaltliche Sätze).
+- Jedes Kapitel (auch später) mit einer kurzen Zusammenfassung beginnen.
+- Kapitel Stand der Technik:
+- Bisherige/ähnliche Lösungen knapp darstellen.
+- Unzulänglichkeiten/Lücken herausarbeiten → Begründung für die eigene Arbeit.
+- Eigene Arbeit abgrenzen (Scope, Randbedingungen, Schnittstellen).
+- Kapitel Systementwurf:
+- Konzeptionelle Lösung (HW/SW-Entwurf) darstellen; Implementierungsdetails vermeiden.
+- Entscheidungen begründen; Alternativen gegenüberstellen (Vor-/Nachteile).
+- Kapitel Implementierung:
+- Fokus auf wesentliche Aspekte; keine langen Code-Listings (ggf. in den Anhang).
+- Auf Vorkenntnisse der Leserschaft aufbauen; klare Beispiele geben.
+- Herausforderungen und gewählte Lösungswege transparent machen.
+- Sprachen/Werkzeuge und zentrale Artefakte nennen.
+- Kapitel Ergebnisse & Ausblick:
+- Erreichte Fortschritte mit geeigneten Beispielen präsentieren.
+- Wo möglich: messbar machen (z. B. Laufzeiten, Genauigkeit, Ressourcen).
+- Vorher/Nachher gegenüberstellen.
+- Ausblick: Verbesserungsmöglichkeiten, nächste Schritte, eigene Ideen/Alternativen festhalten.
+- Kapitel/Abschnitte logisch strukturieren; Einleitung jeder Einheit mit Kurzüberblick.
+- Begriffskonsistenz wahren (gleiches Konzept = gleicher Begriff).
+- Abbildungstabellen/Anhänge korrekt referenzieren.
+- Keine sensiblen Daten oder vertrauliche Informationen ohne Freigabe.

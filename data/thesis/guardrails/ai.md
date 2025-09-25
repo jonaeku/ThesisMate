@@ -1,0 +1,8 @@
+- Wenn neuer Inhalt (Text) durch KI erzeugt wurde: im Literaturverzeichnis einen Eintrag zur KI-Nutzung hinzufügen (Name des KI-Systems, verwendete Prompt/Anfrage, Datum/Uhrzeit).
+- Auch bei anschließender Umformulierung des KI-Texts bleibt die Offenlegungspflicht bestehen.
+- Keine Offenlegung nötig, wenn die KI nur von dir bereitgestellte Inhalte überarbeitet/umformuliert/übersetzt.
+- Jede wesentliche Behauptung muss mit einer Quelle belegt sein (Zitationsstil aus der globalen Config verwenden).
+- Wenn keine Quelle vorhanden ist: Quellen aktiv recherchieren (nicht auf die KI verlassen) oder die Stelle als [Quelle benötigt] markieren und Nutzer:in nachreichen lassen.
+- Angegebene Quellen immer verifizieren (Existenz, Relevanz, Richtigkeit).
+- Generierten Text vollständig auf Plausibilität prüfen; keine unbelegten Fakten stehen lassen.
+- Keine „sicheren“ Formulierungen ohne verifizierte Grundlage; vorsichtige Sprache bei Unsicherheit (z. B. „die Evidenzlage deutet darauf hin …“ + Quelle).

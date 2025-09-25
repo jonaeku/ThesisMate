@@ -40,3 +40,17 @@ chainlit.db
 tmp/
 temp/
 *.tmp
+test_lookup.py
+src/utils/openai_client.py
+data/papers_Computer_Science_IT.json
+.gitignore
+src/utils/gemini_client copy.py
+src/orchestrator/orchestrator_old.py
+src/agents/structure_old.py
+data/thesis/guardrails/style_rules__1.md
+data/thesis/outline/ai-in-healthcare.md
+data/thesis/chapter/01_motivation-for-ai-adoption-in-healthcare-systems/1.3_objectives-and-research-questions-for-ai-in-healthcare.md
+data/thesis/outline/ai-in-healthcare.json
+data/thesis/outline/ai-in-healthcare.md
+data/thesis/outline/ai-in-healthcare.json
+data/papers_Biology_AI_in_Biology.json
