@@ -4,7 +4,11 @@ from typing import Any, AsyncGenerator, List, Tuple
 from src.orchestrator.orchestrator import Orchestrator
 from src.utils.custom_logging import get_logger
 
-from src.utils.google_reminder import next_deadline_message
+try:
+    from src.utils.google_reminder import next_deadline_message
+except ImportError:
+    def next_deadline_message():
+        return {"message": ""}
 from src.utils.storage import save_guardrail_files
 
 logger = get_logger(__name__)

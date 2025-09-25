@@ -1,0 +1,461 @@
+[
+  {
+    "title": "healthAIChain: Improving security and safety using Blockchain Technology   applications in AI-based healthcare systems",
+    "authors": [
+      "Naresh Kshetri",
+      "James Hutson",
+      "Revathy G"
+    ],
+    "abstract": "Blockchain as a digital ledger for keeping records of digital transactions and other information, it is secure and decentralized technology. The globally growing number of digital population every day possesses a significant threat to online data including the medical and patients data. After bitcoin, blockchain technology has emerged into a general-purpose technology with applications in medical industries and healthcare. Blockchain can promote highly configurable openness while retaining the highest security standards for critical data of medical patients. Referred to as distributed record keeping for healthcare systems which makes digital assets unalterable and transparent via a cryptographic hash and decentralized network. The study delves into the security and safety improvement associated with implementing blockchain in AI-based healthcare systems. Blockchain-enabled AI tackles the existing issues related to security, performance efficiencies, and safety in healthcare systems. We have also examined the Artificial Intelligence in healthcare and medical industry, potential areas, open questions concerning the blockchain in healthcare systems. Finally, the article proposed an AI-based healthcare blockchain model (healthAIChain) to improve patients data and security.",
+    "url": "http://arxiv.org/abs/2311.00842v1",
+    "bibtex": "@article{healthaichain:2023,\n  title={healthAIChain: Improving security and safety using Blockchain Technology   applications in AI-based healthcare systems},\n  author={Naresh Kshetri and James Hutson and Revathy G},\n  year={2023},\n  url={http://arxiv.org/abs/2311.00842v1},\n  note={arXiv preprint}\n}",
+    "year": 2023,
+    "relevance_score": 0.95,
+    "source": "arxiv",
+    "citation_count": null,
+    "doi": null
+  },
+  {
+    "title": "Reliable and Resilient AI and IoT-based Personalised Healthcare   Services: A Survey",
+    "authors": [
+      "Najma Taimoor",
+      "Semeen Rehman"
+    ],
+    "abstract": "Recent technological and economic developments have transformed the healthcare sector towards more personalized and IoT-based healthcare services. These services are realized through control and monitoring applications that are typically developed using artificial intelligence/machine learning-based algorithms, which play a significant role in highlighting the efficiency of traditional healthcare systems. Current personalized healthcare services are dedicated to a specific environment to support technological personalization. However, they are unable to consider different interrelated health conditions, leading to inappropriate diagnoses and affecting sustainability and the long-term health of patients. To this end, current Healthcare 5.0 technology has evolved that supersede previous healthcare technologies. The goal of healthcare 5.0 is to achieve an autonomous healthcare service, that takes into account the interdependent effect of different health conditions of a patient. This paper conducts a comprehensive survey on personalized healthcare services. In particular, we first present an overview of key requirements of comprehensive personalized healthcare services in modern healthcare Internet of Things (HIoT), including the definition of personalization and an example use case scenario as a representative for modern HIoT. Second, we explored a fundamental three-layer architecture for IoT-based healthcare systems using AI and non-AI-based approaches, considering key requirements for CPHS followed by their strengths and weaknesses in the frame of personalized healthcare services. Third, we highlighted different security threats against each layer of IoT architecture along with the possible AI and non-AI-based solutions. Finally, we propose a methodology to develop reliable, resilient, and personalized healthcare services that address the identified weaknesses of existing approaches.",
+    "url": "http://arxiv.org/abs/2209.05457v1",
+    "bibtex": "@article{reliable2022,\n  title={Reliable and Resilient AI and IoT-based Personalised Healthcare   Services: A Survey},\n  author={Najma Taimoor and Semeen Rehman},\n  year={2022},\n  url={http://arxiv.org/abs/2209.05457v1},\n  note={arXiv preprint}\n}",
+    "year": 2022,
+    "relevance_score": 0.92,
+    "source": "arxiv",
+    "citation_count": null,
+    "doi": null
+  },
+  {
+    "title": "Global AI Governance in Healthcare: A Cross-Jurisdictional Regulatory   Analysis",
+    "authors": [
+      "Attrayee Chakraborty",
+      "Mandar Karhade"
+    ],
+    "abstract": "Artificial Intelligence (AI) is being adopted across the world and promises a new revolution in healthcare. While AI-enabled medical devices in North America dominate 42.3% of the global market, the use of AI-enabled medical devices in other countries is still a story waiting to be unfolded. We aim to delve deeper into global regulatory approaches towards AI use in healthcare, with a focus on how common themes are emerging globally. We compare these themes to the World Health Organization's (WHO) regulatory considerations and principles on ethical use of AI for healthcare applications. Our work seeks to take a global perspective on AI policy by analyzing 14 legal jurisdictions including countries representative of various regions in the world (North America, South America, South East Asia, Middle East, Africa, Australia, and the Asia-Pacific). Our eventual goal is to foster a global conversation on the ethical use of AI in healthcare and the regulations that will guide it. We propose solutions to promote international harmonization of AI regulations and examine the requirements for regulating generative AI, using China and Singapore as examples of countries with well-developed policies in this area.",
+    "url": "http://arxiv.org/abs/2406.08695v1",
+    "bibtex": "@article{global2024,\n  title={Global AI Governance in Healthcare: A Cross-Jurisdictional Regulatory   Analysis},\n  author={Attrayee Chakraborty and Mandar Karhade},\n  year={2024},\n  url={http://arxiv.org/abs/2406.08695v1},\n  note={arXiv preprint}\n}",
+    "year": 2024,
+    "relevance_score": 0.9,
+    "source": "arxiv",
+    "citation_count": null,
+    "doi": null
+  },
+  {
+    "title": "Risk of AI in Healthcare: A Comprehensive Literature Review and Study   Framework",
+    "authors": [
+      "Apoorva Muley",
+      "Prathamesh Muzumdar",
+      "George Kurian",
+      "Ganga Prasad Basyal"
+    ],
+    "abstract": "This study conducts a thorough examination of the research stream focusing on AI risks in healthcare, aiming to explore the distinct genres within this domain. A selection criterion was employed to carefully analyze 39 articles to identify three primary genres of AI risks prevalent in healthcare: clinical data risks, technical risks, and socio-ethical risks. Selection criteria was based on journal ranking and impact factor. The research seeks to provide a valuable resource for future healthcare researchers, furnishing them with a comprehensive understanding of the complex challenges posed by AI implementation in healthcare settings. By categorizing and elucidating these genres, the study aims to facilitate the development of empirical qualitative and quantitative research, fostering evidence-based approaches to address AI-related risks in healthcare effectively. This endeavor contributes to building a robust knowledge base that can inform the formulation of risk mitigation strategies, ensuring safe and efficient integration of AI technologies in healthcare practices. Thus, it is important to study AI risks in healthcare to build better and efficient AI systems and mitigate risks.",
+    "url": "http://arxiv.org/abs/2309.14530v1",
+    "bibtex": "@article{risk2023,\n  title={Risk of AI in Healthcare: A Comprehensive Literature Review and Study   Framework},\n  author={Apoorva Muley and Prathamesh Muzumdar and George Kurian and Ganga Prasad Basyal},\n  year={2023},\n  url={http://arxiv.org/abs/2309.14530v1},\n  note={arXiv preprint}\n}",
+    "year": 2023,
+    "relevance_score": 0.88,
+    "source": "arxiv",
+    "citation_count": null,
+    "doi": null
+  },
+  {
+    "title": "SoK: Security and Privacy Risks of Healthcare AI",
+    "authors": [
+      "Yuanhaur Chang",
+      "Han Liu",
+      "Chenyang Lu",
+      "Ning Zhang"
+    ],
+    "abstract": "The integration of artificial intelligence (AI) and machine learning (ML) into healthcare systems holds great promise for enhancing patient care and care delivery efficiency; however, it also exposes sensitive data and system integrity to potential cyberattacks. Current security and privacy (S&P) research on healthcare AI is highly unbalanced in terms of healthcare deployment scenarios and threat models, and has a disconnected focus with the biomedical research community. This hinders a comprehensive understanding of the risks that healthcare AI entails. To address this gap, this paper takes a thorough examination of existing healthcare AI S&P research, providing a unified framework that allows the identification of under-explored areas. Our survey presents a systematic overview of healthcare AI attacks and defenses, and points out challenges and research opportunities for each AI-driven healthcare application domain. Through our experimental analysis of different threat models and feasibility studies on under-explored adversarial attacks, we provide compelling insights into the pressing need for cybersecurity research in the rapidly evolving field of healthcare AI.",
+    "url": "http://arxiv.org/abs/2409.07415v2",
+    "bibtex": "@article{sok:2024,\n  title={SoK: Security and Privacy Risks of Healthcare AI},\n  author={Yuanhaur Chang and Han Liu and Chenyang Lu and Ning Zhang},\n  year={2024},\n  url={http://arxiv.org/abs/2409.07415v2},\n  note={arXiv preprint}\n}",
+    "year": 2024,
+    "relevance_score": 0.85,
+    "source": "arxiv",
+    "citation_count": null,
+    "doi": null
+  },
+  {
+    "title": "Justice in Healthcare Artificial Intelligence in Africa",
+    "authors": [
+      "Aloysius Ochasi",
+      "Abdoul Jalil Djiberou Mahamadou",
+      "Russ B. Altman"
+    ],
+    "abstract": "There is an ongoing debate on balancing the benefits and risks of artificial intelligence (AI) as AI is becoming critical to improving healthcare delivery and patient outcomes. Such improvements are essential in resource-constrained settings where millions lack access to adequate healthcare services, such as in Africa. AI in such a context can potentially improve the effectiveness, efficiency, and accessibility of healthcare services. Nevertheless, the development and use of AI-driven healthcare systems raise numerous ethical, legal, and socio-economic issues. Justice is a major concern in AI that has implications for amplifying social inequities. This paper discusses these implications and related justice concepts such as solidarity, Common Good, sustainability, AI bias, and fairness. For Africa to effectively benefit from AI, these principles should align with the local context while balancing the risks. Compared to mainstream ethical debates on justice, this perspective offers context-specific considerations for equitable healthcare AI development in Africa.",
+    "url": "http://arxiv.org/abs/2406.10653v1",
+    "bibtex": "@article{justice2024,\n  title={Justice in Healthcare Artificial Intelligence in Africa},\n  author={Aloysius Ochasi and Abdoul Jalil Djiberou Mahamadou and Russ B. Altman},\n  year={2024},\n  url={http://arxiv.org/abs/2406.10653v1},\n  note={arXiv preprint}\n}",
+    "year": 2024,
+    "relevance_score": 0.82,
+    "source": "arxiv",
+    "citation_count": null,
+    "doi": null
+  },
+  {
+    "title": "A Survey on Federated Learning for the Healthcare Metaverse: Concepts,   Applications, Challenges, and Future Directions",
+    "authors": [
+      "Ali Kashif Bashir",
+      "Nancy Victor",
+      "Sweta Bhattacharya",
+      "Thien Huynh-The",
+      "Rajeswari Chengoden",
+      "Gokul Yenduri",
+      "Praveen Kumar Reddy Maddikunta",
+      "Quoc-Viet Pham",
+      "Thippa Reddy Gadekallu",
+      "Madhusanka Liyanage"
+    ],
+    "abstract": "Recent technological advancements have considerately improved healthcare systems to provide various intelligent healthcare services and improve the quality of life. Federated learning (FL), a new branch of artificial intelligence (AI), opens opportunities to deal with privacy issues in healthcare systems and exploit data and computing resources available at distributed devices. Additionally, the Metaverse, through integrating emerging technologies, such as AI, cloud edge computing, Internet of Things (IoT), blockchain, and semantic communications, has transformed many vertical domains in general and the healthcare sector in particular. Obviously, FL shows many benefits and provides new opportunities for conventional and Metaverse healthcare, motivating us to provide a survey on the usage of FL for Metaverse healthcare systems. First, we present preliminaries to IoT-based healthcare systems, FL in conventional healthcare, and Metaverse healthcare. The benefits of FL in Metaverse healthcare are then discussed, from improved privacy and scalability, better interoperability, better data management, and extra security to automation and low-latency healthcare services. Subsequently, we discuss several applications pertaining to FL-enabled Metaverse healthcare, including medical diagnosis, patient monitoring, medical education, infectious disease, and drug discovery. Finally, we highlight significant challenges and potential solutions toward the realization of FL in Metaverse healthcare.",
+    "url": "http://arxiv.org/abs/2304.00524v2",
+    "bibtex": "@article{a2023,\n  title={A Survey on Federated Learning for the Healthcare Metaverse: Concepts,   Applications, Challenges, and Future Directions},\n  author={Ali Kashif Bashir and Nancy Victor and Sweta Bhattacharya and Thien Huynh-The and Rajeswari Chengoden and Gokul Yenduri and Praveen Kumar Reddy Maddikunta and Quoc-Viet Pham and Thippa Reddy Gadekallu and Madhusanka Liyanage},\n  year={2023},\n  url={http://arxiv.org/abs/2304.00524v2},\n  note={arXiv preprint}\n}",
+    "year": 2023,
+    "relevance_score": 0.8,
+    "source": "arxiv",
+    "citation_count": null,
+    "doi": null
+  },
+  {
+    "title": "Enhancing Guardrails for Safe and Secure Healthcare AI",
+    "authors": [
+      "Ananya Gangavarapu"
+    ],
+    "abstract": "Generative AI holds immense promise in addressing global healthcare access challenges, with numerous innovative applications now ready for use across various healthcare domains. However, a significant barrier to the widespread adoption of these domain-specific AI solutions is the lack of robust safety mechanisms to effectively manage issues such as hallucination, misinformation, and ensuring truthfulness. Left unchecked, these risks can compromise patient safety and erode trust in healthcare AI systems. While general-purpose frameworks like Llama Guard are useful for filtering toxicity and harmful content, they do not fully address the stringent requirements for truthfulness and safety in healthcare contexts. This paper examines the unique safety and security challenges inherent to healthcare AI, particularly the risk of hallucinations, the spread of misinformation, and the need for factual accuracy in clinical settings. I propose enhancements to existing guardrails frameworks, such as Nvidia NeMo Guardrails, to better suit healthcare-specific needs. By strengthening these safeguards, I aim to ensure the secure, reliable, and accurate use of AI in healthcare, mitigating misinformation risks and improving patient safety.",
+    "url": "http://arxiv.org/abs/2409.17190v1",
+    "bibtex": "@article{enhancing2024,\n  title={Enhancing Guardrails for Safe and Secure Healthcare AI},\n  author={Ananya Gangavarapu},\n  year={2024},\n  url={http://arxiv.org/abs/2409.17190v1},\n  note={arXiv preprint}\n}",
+    "year": 2024,
+    "relevance_score": 0.78,
+    "source": "arxiv",
+    "citation_count": null,
+    "doi": null
+  },
+  {
+    "title": "DeepSeek reshaping healthcare in China's tertiary hospitals",
+    "authors": [
+      "Jishizhan Chen",
+      "Qingzeng Zhang"
+    ],
+    "abstract": "The rapid integration of artificial intelligence (AI) into healthcare is transforming clinical decision-making and hospital operations. DeepSeek has emerged as a leading AI system, widely deployed across China's tertiary hospitals since January 2025. Initially implemented in Shanghai's major medical institutions, it has since expanded nationwide, enhancing diagnostic accuracy, streamlining workflows, and improving patient management. AI-powered pathology, imaging analysis, and clinical decision support systems have demonstrated significant potential in optimizing medical processes and reducing the cognitive burden on healthcare professionals. However, the widespread adoption of AI in healthcare raises critical regulatory and ethical challenges, particularly regarding accountability in AI-assisted diagnosis and the risk of automation bias. The absence of a well-defined liability framework underscores the need for policies that ensure AI functions as an assistive tool rather than an autonomous decision-maker. With continued technological advancements, AI is expected to integrate multimodal data sources, such as genomics and radiomics, paving the way for precision medicine and personalized treatment strategies. The future of AI in healthcare depends on the development of transparent regulatory structures, industry collaboration, and adaptive governance frameworks that balance innovation with responsibility, ensuring equitable and effective AI-driven medical services.",
+    "url": "http://arxiv.org/abs/2502.16732v2",
+    "bibtex": "@article{deepseek2025,\n  title={DeepSeek reshaping healthcare in China's tertiary hospitals},\n  author={Jishizhan Chen and Qingzeng Zhang},\n  year={2025},\n  url={http://arxiv.org/abs/2502.16732v2},\n  note={arXiv preprint}\n}",
+    "year": 2025,
+    "relevance_score": 0.75,
+    "source": "arxiv",
+    "citation_count": null,
+    "doi": null
+  },
+  {
+    "title": "Threefold model for AI Readiness: A Case Study with Finnish Healthcare   SMEs",
+    "authors": [
+      "Mohammed Alnajjar",
+      "Khalid Alnajjar",
+      "Mika Hämäläinen"
+    ],
+    "abstract": "This study examines AI adoption among Finnish healthcare SMEs through semi-structured interviews with six health-tech companies. We identify three AI engagement categories: AI-curious (exploring AI), AI-embracing (integrating AI), and AI-catering (providing AI solutions). Our proposed threefold model highlights key adoption barriers, including regulatory complexities, technical expertise gaps, and financial constraints. While SMEs recognize AI's potential, most remain in early adoption stages. We provide actionable recommendations to accelerate AI integration, focusing on regulatory reforms, talent development, and inter-company collaboration, offering valuable insights for healthcare organizations, policymakers, and researchers.",
+    "url": "http://arxiv.org/abs/2503.14527v1",
+    "bibtex": "@article{threefold2025,\n  title={Threefold model for AI Readiness: A Case Study with Finnish Healthcare   SMEs},\n  author={Mohammed Alnajjar and Khalid Alnajjar and Mika Hämäläinen},\n  year={2025},\n  url={http://arxiv.org/abs/2503.14527v1},\n  note={arXiv preprint}\n}",
+    "year": 2025,
+    "relevance_score": 0.7,
+    "source": "arxiv",
+    "citation_count": null,
+    "doi": null
+  },
+  {
+    "title": "Assessing Fairness in Classification Parity of Machine Learning Models   in Healthcare",
+    "authors": [
+      "Ming Yuan",
+      "Vikas Kumar",
+      "Muhammad Aurangzeb Ahmad",
+      "Ankur Teredesai"
+    ],
+    "abstract": "Fairness in AI and machine learning systems has become a fundamental problem in the accountability of AI systems. While the need for accountability of AI models is near ubiquitous, healthcare in particular is a challenging field where accountability of such systems takes upon additional importance, as decisions in healthcare can have life altering consequences. In this paper we present preliminary results on fairness in the context of classification parity in healthcare. We also present some exploratory methods to improve fairness and choosing appropriate classification algorithms in the context of healthcare.",
+    "url": "http://arxiv.org/abs/2102.03717v1",
+    "bibtex": "@article{assessing2021,\n  title={Assessing Fairness in Classification Parity of Machine Learning Models   in Healthcare},\n  author={Ming Yuan and Vikas Kumar and Muhammad Aurangzeb Ahmad and Ankur Teredesai},\n  year={2021},\n  url={http://arxiv.org/abs/2102.03717v1},\n  note={arXiv preprint}\n}",
+    "year": 2021,
+    "relevance_score": 0.6,
+    "source": "arxiv",
+    "citation_count": null,
+    "doi": null
+  },
+  {
+    "title": "Inclusivity of AI Speech in Healthcare: A Decade Look Back",
+    "authors": [
+      "Retno Larasati"
+    ],
+    "abstract": "The integration of AI speech recognition technologies into healthcare has the potential to revolutionize clinical workflows and patient-provider communication. However, this study reveals significant gaps in inclusivity, with datasets and research disproportionately favouring high-resource languages, standardized accents, and narrow demographic groups. These biases risk perpetuating healthcare disparities, as AI systems may misinterpret speech from marginalized groups. This paper highlights the urgent need for inclusive dataset design, bias mitigation research, and policy frameworks to ensure equitable access to AI speech technologies in healthcare.",
+    "url": "http://arxiv.org/abs/2505.10596v1",
+    "bibtex": "@article{inclusivity2025,\n  title={Inclusivity of AI Speech in Healthcare: A Decade Look Back},\n  author={Retno Larasati},\n  year={2025},\n  url={http://arxiv.org/abs/2505.10596v1},\n  note={arXiv preprint}\n}",
+    "year": 2025,
+    "relevance_score": 0.5,
+    "source": "arxiv",
+    "citation_count": null,
+    "doi": null
+  },
+  {
+    "title": "Autonomous Mobile Clinics: Empowering Affordable Anywhere Anytime   Healthcare Access",
+    "authors": [
+      "Shaoshan Liu",
+      "Yuzhang Huang",
+      "Leiyu Shi"
+    ],
+    "abstract": "We are facing a global healthcare crisis today as the healthcare cost is ever climbing, but with the aging population, government fiscal revenue is ever dropping. To create a more efficient and effective healthcare system, three technical challenges immediately present themselves: healthcare access, healthcare equity, and healthcare efficiency. An autonomous mobile clinic solves the healthcare access problem by bringing healthcare services to the patient by the order of the patient's fingertips. Nevertheless, to enable a universal autonomous mobile clinic network, a three-stage technical roadmap needs to be achieved: In stage one, we focus on solving the inequity challenge in the existing healthcare system by combining autonomous mobility and telemedicine. In stage two, we develop an AI doctor for primary care, which we foster from infancy to adulthood with clean healthcare data. With the AI doctor, we can solve the inefficiency problem. In stage three, after we have proven that the autonomous mobile clinic network can truly solve the target clinical use cases, we shall open up the platform for all medical verticals, thus enabling universal healthcare through this whole new system.",
+    "url": "http://arxiv.org/abs/2204.04841v3",
+    "bibtex": "@article{autonomous2022,\n  title={Autonomous Mobile Clinics: Empowering Affordable Anywhere Anytime   Healthcare Access},\n  author={Shaoshan Liu and Yuzhang Huang and Leiyu Shi},\n  year={2022},\n  url={http://arxiv.org/abs/2204.04841v3},\n  note={arXiv preprint}\n}",
+    "year": 2022,
+    "relevance_score": 0.42,
+    "source": "arxiv",
+    "citation_count": null,
+    "doi": null
+  },
+  {
+    "title": "Application of AI in Nutrition",
+    "authors": [
+      "Ritu Ramakrishnan",
+      "Tianxiang Xing",
+      "Tianfeng Chen",
+      "Ming-Hao Lee",
+      "Jinzhu Gao"
+    ],
+    "abstract": "In healthcare, artificial intelligence (AI) has been changing the way doctors and health experts take care of people. This paper will cover how AI is making major changes in the health care system, especially with nutrition. Various machine learning and deep learning algorithms have been developed to extract valuable information from healthcare data which help doctors, nutritionists, and health experts to make better decisions and make our lifestyle healthy. This paper provides an overview of the current state of AI applications in healthcare with a focus on the utilization of AI-driven recommender systems in nutrition. It will discuss the positive outcomes and challenges that arise when AI is used in this field. This paper addresses the challenges to develop AI recommender systems in healthcare, providing a well-rounded perspective on the complexities. Real-world examples and research findings are presented to underscore the tangible and significant impact AI recommender systems have in the field of healthcare, particularly in nutrition. The ongoing efforts of applying AI in nutrition lay the groundwork for a future where personalized recommendations play a pivotal role in guiding individuals toward healthier lifestyles.",
+    "url": "http://arxiv.org/abs/2312.11569v1",
+    "bibtex": "@article{application2023,\n  title={Application of AI in Nutrition},\n  author={Ritu Ramakrishnan and Tianxiang Xing and Tianfeng Chen and Ming-Hao Lee and Jinzhu Gao},\n  year={2023},\n  url={http://arxiv.org/abs/2312.11569v1},\n  note={arXiv preprint}\n}",
+    "year": 2023,
+    "relevance_score": 0.4,
+    "source": "arxiv",
+    "citation_count": null,
+    "doi": null
+  },
+  {
+    "title": "AI Ethics in Smart Healthcare",
+    "authors": [
+      "Sudeep Pasricha"
+    ],
+    "abstract": "This article reviews the landscape of ethical challenges of integrating artificial intelligence (AI) into smart healthcare products, including medical electronic devices. Differences between traditional ethics in the medical domain and emerging ethical challenges with AI-driven healthcare are presented, particularly as they relate to transparency, bias, privacy, safety, responsibility, justice, and autonomy. Open challenges and recommendations are outlined to enable the integration of ethical principles into the design, validation, clinical trials, deployment, monitoring, repair, and retirement of AI-based smart healthcare products.",
+    "url": "http://arxiv.org/abs/2211.06346v1",
+    "bibtex": "@article{ai2022,\n  title={AI Ethics in Smart Healthcare},\n  author={Sudeep Pasricha},\n  year={2022},\n  url={http://arxiv.org/abs/2211.06346v1},\n  note={arXiv preprint}\n}",
+    "year": 2022,
+    "relevance_score": 0.3,
+    "source": "arxiv",
+    "citation_count": null,
+    "doi": null
+  },
+  {
+    "title": "Explainable AI (ex-AI)",
+    "authors": [
+      "Andreas Holzinger"
+    ],
+    "abstract": "Abstract not available",
+    "url": "https://doi.org/10.1007/s00287-018-1102-5",
+    "bibtex": "@article{explainable2018,\n  title={Explainable AI (ex-AI)},\n  author={Andreas Holzinger},\n  year={2018},\n  journal={Informatik-Spektrum},\n  doi={10.1007/s00287-018-1102-5}\n}",
+    "year": 2018,
+    "relevance_score": 0.2,
+    "source": "crossref",
+    "citation_count": null,
+    "doi": "10.1007/s00287-018-1102-5"
+  },
+  {
+    "title": "AI-Powered Knowledge and Expertise Mining in Healthcare from a Field Experiment",
+    "authors": [
+      "Julia Kauper",
+      "Susanne Franke",
+      "Felix Franke",
+      "Steven Grieshammer"
+    ],
+    "abstract": "<jats:title>Abstract</jats:title><jats:p>With the increasing prevalence of mobile applications across various domains, there is a growing demand for individualised and self-adaptive learning pathways. This is particularly important in the mobile health sector, where there is a critical need to investigate how expert and experiential knowledge can be acquired, digitalised and formalised into data which is subsequently processed and further used. To address this demand, our research explores how A...",
+    "url": "https://doi.org/10.1007/978-3-658-43705-3_4",
+    "bibtex": "@article{ai-powered2024,\n  title={AI-Powered Knowledge and Expertise Mining in Healthcare from a Field Experiment},\n  author={Julia Kauper and Susanne Franke and Felix Franke and Steven Grieshammer},\n  year={2024},\n  journal={Informatik aktuell},\n  doi={10.1007/978-3-658-43705-3_4}\n}",
+    "year": 2024,
+    "relevance_score": 0.1,
+    "source": "crossref",
+    "citation_count": null,
+    "doi": "10.1007/978-3-658-43705-3_4"
+  },
+  {
+    "title": "AI Languages and AI Machines: An Overview",
+    "authors": [
+      "Harold Boley"
+    ],
+    "abstract": "Abstract not available",
+    "url": "https://doi.org/10.1007/978-3-662-02328-0_12",
+    "bibtex": "@article{ai1981,\n  title={AI Languages and AI Machines: An Overview},\n  author={Harold Boley},\n  year={1981},\n  journal={Informatik-Fachberichte},\n  doi={10.1007/978-3-662-02328-0_12}\n}",
+    "year": 1981,
+    "relevance_score": 0.0,
+    "source": "crossref",
+    "citation_count": null,
+    "doi": "10.1007/978-3-662-02328-0_12"
+  },
+  {
+    "title": "AI in Healthcare: Do Not Forget About Allied Healthcare",
+    "authors": [
+      "Tim Hulsen",
+      "Mark Scheper"
+    ],
+    "abstract": "<jats:p>Artificial intelligence, the simulation of human intelligence by computers and machines, has found its way into healthcare, helping surgeons, doctors, radiologists, and many more. However, over 80% of healthcare professionals consists of people working in allied health professions such as nurses, physiotherapists, and midwives. Considering the aging of the general population around the world, the workforce shortages in these occupations are especially crucial. As the COVID-19 pandemic de...",
+    "url": "https://doi.org/10.3390/ai6060114",
+    "bibtex": "@article{ai2025,\n  title={AI in Healthcare: Do Not Forget About Allied Healthcare},\n  author={Tim Hulsen and Mark Scheper},\n  year={2025},\n  journal={AI},\n  doi={10.3390/ai6060114}\n}",
+    "year": 2025,
+    "relevance_score": 0.0,
+    "source": "crossref",
+    "citation_count": null,
+    "doi": "10.3390/ai6060114"
+  },
+  {
+    "title": "AI Approaches to Cognitive Systems – The Example of Spatial Cognition",
+    "authors": [
+      "Bernhard Nebel",
+      "Christian Freksa"
+    ],
+    "abstract": "Abstract not available",
+    "url": "https://doi.org/10.1007/s00287-011-0555-6",
+    "bibtex": "@article{ai2011,\n  title={AI Approaches to Cognitive Systems – The Example of Spatial Cognition},\n  author={Bernhard Nebel and Christian Freksa},\n  year={2011},\n  journal={Informatik-Spektrum},\n  doi={10.1007/s00287-011-0555-6}\n}",
+    "year": 2011,
+    "relevance_score": 0.0,
+    "source": "crossref",
+    "citation_count": null,
+    "doi": "10.1007/s00287-011-0555-6"
+  },
+  {
+    "title": "Healthcare AI/ML essentials",
+    "authors": [
+      "Kapila Monga"
+    ],
+    "abstract": "Abstract not available",
+    "url": "https://doi.org/10.1201/9781003454663-1",
+    "bibtex": "@article{healthcare2025,\n  title={Healthcare AI/ML essentials},\n  author={Kapila Monga},\n  year={2025},\n  journal={AI/ML for Healthcare},\n  doi={10.1201/9781003454663-1}\n}",
+    "year": 2025,
+    "relevance_score": 0.0,
+    "source": "crossref",
+    "citation_count": null,
+    "doi": "10.1201/9781003454663-1"
+  },
+  {
+    "title": "Wissensverarbeitung, Expertensysteme, AI-Tools",
+    "authors": [
+      "E. Lehmann"
+    ],
+    "abstract": "Abstract not available",
+    "url": "https://doi.org/10.1007/978-3-642-93336-3_29",
+    "bibtex": "@article{wissensverarbeitung,1986,\n  title={Wissensverarbeitung, Expertensysteme, AI-Tools},\n  author={E. Lehmann},\n  year={1986},\n  journal={Informatik in der Praxis},\n  doi={10.1007/978-3-642-93336-3_29}\n}",
+    "year": 1986,
+    "relevance_score": 0.0,
+    "source": "crossref",
+    "citation_count": null,
+    "doi": "10.1007/978-3-642-93336-3_29"
+  },
+  {
+    "title": "AI in Hospital Administration, Revolutionizing Healthcare",
+    "authors": [
+      "David Mhlanga"
+    ],
+    "abstract": "Abstract not available",
+    "url": "https://doi.org/10.1201/9781003475804-13",
+    "bibtex": "@article{ai2025,\n  title={AI in Hospital Administration, Revolutionizing Healthcare},\n  author={David Mhlanga},\n  year={2025},\n  journal={AI in Hospital Administration},\n  doi={10.1201/9781003475804-13}\n}",
+    "year": 2025,
+    "relevance_score": 0.0,
+    "source": "crossref",
+    "citation_count": null,
+    "doi": "10.1201/9781003475804-13"
+  },
+  {
+    "title": "AI for Healthcare Service Robots",
+    "authors": [
+      "Eduard Fosch-Villaronga",
+      "Hadassah Drukarch"
+    ],
+    "abstract": "Abstract not available",
+    "url": "https://doi.org/10.1201/9781003201779-7",
+    "bibtex": "@article{ai2022,\n  title={AI for Healthcare Service Robots},\n  author={Eduard Fosch-Villaronga and Hadassah Drukarch},\n  year={2022},\n  journal={AI for Healthcare Robotics},\n  doi={10.1201/9781003201779-7}\n}",
+    "year": 2022,
+    "relevance_score": 0.0,
+    "source": "crossref",
+    "citation_count": null,
+    "doi": "10.1201/9781003201779-7"
+  },
+  {
+    "title": "Navigate healthcare AI/ML responsibly",
+    "authors": [
+      "Kapila Monga"
+    ],
+    "abstract": "Abstract not available",
+    "url": "https://doi.org/10.1201/9781003454663-4",
+    "bibtex": "@article{navigate2025,\n  title={Navigate healthcare AI/ML responsibly},\n  author={Kapila Monga},\n  year={2025},\n  journal={AI/ML for Healthcare},\n  doi={10.1201/9781003454663-4}\n}",
+    "year": 2025,
+    "relevance_score": 0.0,
+    "source": "crossref",
+    "citation_count": null,
+    "doi": "10.1201/9781003454663-4"
+  },
+  {
+    "title": "Ethical Considerations in AI-enabled Healthcare",
+    "authors": [
+      "David Mhlanga"
+    ],
+    "abstract": "Abstract not available",
+    "url": "https://doi.org/10.1201/9781003475804-11",
+    "bibtex": "@article{ethical2025,\n  title={Ethical Considerations in AI-enabled Healthcare},\n  author={David Mhlanga},\n  year={2025},\n  journal={AI in Hospital Administration},\n  doi={10.1201/9781003475804-11}\n}",
+    "year": 2025,
+    "relevance_score": 0.0,
+    "source": "crossref",
+    "citation_count": null,
+    "doi": "10.1201/9781003475804-11"
+  },
+  {
+    "title": "Path to sustainable AI in healthcare",
+    "authors": [
+      "Kapila Monga"
+    ],
+    "abstract": "Abstract not available",
+    "url": "https://doi.org/10.1201/9781003454663-6",
+    "bibtex": "@article{path2025,\n  title={Path to sustainable AI in healthcare},\n  author={Kapila Monga},\n  year={2025},\n  journal={AI/ML for Healthcare},\n  doi={10.1201/9781003454663-6}\n}",
+    "year": 2025,
+    "relevance_score": 0.0,
+    "source": "crossref",
+    "citation_count": null,
+    "doi": "10.1201/9781003454663-6"
+  },
+  {
+    "title": "AI in Healthcare Finance and Billing",
+    "authors": [
+      "David Mhlanga"
+    ],
+    "abstract": "Abstract not available",
+    "url": "https://doi.org/10.1201/9781003475804-10",
+    "bibtex": "@article{ai2025,\n  title={AI in Healthcare Finance and Billing},\n  author={David Mhlanga},\n  year={2025},\n  journal={AI in Hospital Administration},\n  doi={10.1201/9781003475804-10}\n}",
+    "year": 2025,
+    "relevance_score": 0.0,
+    "source": "crossref",
+    "citation_count": null,
+    "doi": "10.1201/9781003475804-10"
+  },
+  {
+    "title": "Overcoming Barriers to AI Adoption in Healthcare",
+    "authors": [
+      "David Mhlanga"
+    ],
+    "abstract": "Abstract not available",
+    "url": "https://doi.org/10.1201/9781003475804-12",
+    "bibtex": "@article{overcoming2025,\n  title={Overcoming Barriers to AI Adoption in Healthcare},\n  author={David Mhlanga},\n  year={2025},\n  journal={AI in Hospital Administration},\n  doi={10.1201/9781003475804-12}\n}",
+    "year": 2025,
+    "relevance_score": 0.0,
+    "source": "crossref",
+    "citation_count": null,
+    "doi": "10.1201/9781003475804-12"
+  },
+  {
+    "title": "AI and Predictive Analytics and Risk Assessment in Healthcare",
+    "authors": [
+      "David Mhlanga"
+    ],
+    "abstract": "Abstract not available",
+    "url": "https://doi.org/10.1201/9781003475804-6",
+    "bibtex": "@article{ai2025,\n  title={AI and Predictive Analytics and Risk Assessment in Healthcare},\n  author={David Mhlanga},\n  year={2025},\n  journal={AI in Hospital Administration},\n  doi={10.1201/9781003475804-6}\n}",
+    "year": 2025,
+    "relevance_score": 0.0,
+    "source": "crossref",
+    "citation_count": null,
+    "doi": "10.1201/9781003475804-6"
+  }
+]
