@@ -393,7 +393,7 @@ def _safe_filename(name: str) -> str:
 
 def save_guardrail_files(
     files: Iterable[Union[Tuple[str, bytes], dict]],
-    allowed_ext: List[str] | None = None,
+    allowed_ext: Optional[List[str]] = None,
     max_mb: int = 25
 ) -> List[str]:
     """

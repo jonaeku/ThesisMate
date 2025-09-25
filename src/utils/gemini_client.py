@@ -1,5 +1,7 @@
 # src/utils/gemini_client.py
+from ast import Dict
 import os
+from typing import Optional
 import google.generativeai as genai
 from google.generativeai.types import GenerationConfig
 
@@ -16,7 +18,7 @@ class GeminiClient:
         messages,
         temperature: float = 0.0,
         max_tokens: int = 600,
-        response_schema: dict | None = None,
+        response_schema: Optional[Dict[str]] = None,
         force_json: bool = False,
     ) -> str:
         # Messages in einen Prompt gießen (einfach, aber robust)
