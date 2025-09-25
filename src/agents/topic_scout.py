@@ -3,7 +3,7 @@ from src.models.models import (
     TopicSuggestion, TopicScoutResponse, UserContext, AgentResponse, 
     AgentInstruction, AgentCapabilityAssessment, TopicEvaluation
 )
-from src.utils.logging import get_logger
+from src.utils.custom_logging import get_logger
 from src.utils.openrouter_client import OpenRouterClient
 
 logger = get_logger(__name__)

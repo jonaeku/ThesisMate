@@ -61,5 +61,19 @@ def next_deadline_message(credentials_path="credentials.json", token_path="token
     days_left = (start_dt - now).days
     title = e.get("summary", "(no title)")
     formatted_date = start_dt.strftime("%d.%m.%Y")
-    human = f"PS: Next deadline: **{title}** on **{formatted_date}** (in {days_left} days)"
-    return {"title": title, "start": start_raw, "days_left": days_left, "message": human}
+
+    # Generate message depending on urgency
+    if days_left <= 1:
+        human = f"⚠️ URGENT: **{title}** is due on **{formatted_date}** (in {days_left} day{'s' if days_left != 1 else ''})!"
+    elif days_left <= 7:
+        human = f"⏳ Heads up: **{title}** is coming up soon — **{formatted_date}** (in {days_left} days)."
+    else:
+        human = f"📅 FYI: Your next deadline is **{title}** on **{formatted_date}** (in {days_left} days)."
+
+    return {
+        "title": title,
+        "start": start_raw,
+        "days_left": days_left,
+        "message": human,
+    }
+

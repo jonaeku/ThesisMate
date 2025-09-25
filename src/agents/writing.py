@@ -5,7 +5,7 @@ import json
 import glob
 from typing import Optional, List, Tuple
 import re
-from src.utils.logging import get_logger
+from src.utils.custom_logging import get_logger
 from src.utils.openrouter_client import OpenRouterClient
 from src.utils.storage import (
     _strip_leading_enumeration, list_guardrail_files, load_guardrails, load_writing_style, save_guardrail_files, save_guardrails,

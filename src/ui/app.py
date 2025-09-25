@@ -2,7 +2,9 @@ import chainlit as cl
 import asyncio, os
 from typing import Any, AsyncGenerator, List, Tuple
 from src.orchestrator.orchestrator import Orchestrator
-from src.utils.logging import get_logger
+from src.utils.custom_logging import get_logger
+
+from src.utils.google_reminder import next_deadline_message
 from src.utils.storage import save_guardrail_files
 
 logger = get_logger(__name__)
@@ -27,6 +29,9 @@ async def on_chat_start():
     
     What would you like to work on today?
     """
+
+
+    welcome_msg += f"\n \n {next_deadline_message()["message"]}"
     await cl.Message(content=welcome_msg).send()
 
 @cl.on_message
