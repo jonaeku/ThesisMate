@@ -4,7 +4,6 @@ from typing import Optional, Tuple, List
 from src.utils.custom_logging import get_logger
 from src.utils.openrouter_client import OpenRouterClient
 
-# storage + models used elsewhere in your project
 from src.utils.storage import (
     load_latest_outline, _strip_leading_enumeration, list_guardrail_files
 )
@@ -14,14 +13,11 @@ from src.models.models import (
     ThesisOutline, OutlineSection, OutlineChapter, WritingStyleConfig, GuardrailsConfig
 )
 
-# global style store (style.json in data/thesis/config)
 from src.utils.style_store import get_style as get_global_style
 
 
 logger = get_logger(__name__)
 
-# IMPORTANT: matches your real layout like
-# data/thesis/chapter/04_experimental-design-and-results-for-ai-in-healthcare/08.03.md
 CHAPTERS_ROOT = "data/thesis/chapter"
 SECTION_GLOB  = os.path.join(CHAPTERS_ROOT, "**", "*.md")
 
@@ -45,186 +41,7 @@ class ReviewerAgent:
         return AgentCapabilityAssessment(can_handle=False, confidence=0.4, missing_info=[], reasoning="No explicit review intent", suggested_questions=[])
 
     # ---------- MAIN ----------
-    def process_request_old(self, user_input: str, context: UserContext, options: Optional[dict] = None) -> AgentResponse:
-        """
-        Topic-Agent-style pipeline:
-        1) Enrich context
-        2) can_handle_request (if present)
-        3) Gate: do we have enough info? → ask targeted question
-        4) Perform review (inline / chapter / all)
-        5) Format & return
-
-        Modes:
-        - "review: <text>"     → Inline review of the provided text
-        - "review chapter 2.3" → Review a saved section
-        - "review all"         → Short pass over multiple saved sections
-        """
-        logger.info(f"[ReviewerAgent] processing: {user_input[:160]}")
-        options = options or {}
-        t = (user_input or "").strip()
-
-        try:
-            # ---------------- 1) Enrich context ----------------
-            updated_ctx = self._update_context_from_input_basic(user_input, context) if hasattr(self, "_update_context_from_input_basic") else context
-            outline = getattr(updated_ctx, "latest_outline", None)
-
-            # ---------------- 2) Capability check ---------------
-            assessment = None
-            if hasattr(self, "can_handle_request"):
-                try:
-                    assessment = self.can_handle_request(user_input, updated_ctx)
-                except Exception as e:
-                    logger.warning(f"[ReviewerAgent] can_handle_request failed, assuming YES: {e}")
-            if assessment and not assessment.can_handle:
-                return AgentResponse(
-                    success=False,
-                    agent_name=self.agent_name,
-                    capability_assessment=assessment,
-                    user_message=f"I can't help with this. {assessment.reasoning}",
-                    updated_context=updated_ctx,
-                )
-
-            # ---------------- 3) Gate: enough info? --------------
-            # Detect mode (without heavy file IO)
-            inline_match = re.search(r"\breview\s*:\s*(.+)$", t, flags=re.I | re.S)
-            wants_all   = bool(re.search(r"\breview\s+all\b", t, flags=re.I))
-            target_pair = None if (inline_match or wants_all) else self._parse_chapter_target(t)
-
-            # If nothing recognized → ask targeted question (Topic-Agent style)
-            if not inline_match and not wants_all and not target_pair:
-                menu = self._format_outline_for_prompt(outline) if outline else ""
-                help_msg = (
-                    "What should I review?\n"
-                    "- `review: <Your text>`\n"
-                    "- `review chapter 2.3` (or `review kapitel 2.3`)\n"
-                    "- `review all`\n"
-                ) + (("\nCurrent outline:\n" + menu) if menu else "")
-                return AgentResponse(
-                    success=False,
-                    agent_name=self.agent_name,
-                    instructions=[AgentInstruction(
-                        requesting_agent=self.agent_name,
-                        action_type="ask_user",
-                        target="user",
-                        message=help_msg,
-                        reasoning="Need explicit review scope."
-                    )],
-                    user_message=help_msg,
-                    updated_context=updated_ctx
-                )
-
-            # ---------------- 4) Perform review -------------------
-            # 4.1 Load style/guardrails and prompt helpers only now (when needed)
-            style_json = get_global_style() or {}
-            style_guide_text = style_json.get("style_guide", "")
-            citation_style   = style_json.get("citation_style", "APA")
-            guardrail_text   = self._read_guardrail_docs(max_chars=6000)
-
-            # Mode A: Inline review
-            if inline_match:
-                passage = inline_match.group(1).strip()
-                if not passage:
-                    msg = "Please append the text to be reviewed after `review:`."
-                    return AgentResponse(
-                        success=False, agent_name=self.agent_name,
-                        instructions=[AgentInstruction(
-                            requesting_agent=self.agent_name, action_type="ask_user",
-                            target="user", message=msg, reasoning="Inline passage missing."
-                        )],
-                        user_message=msg, updated_context=updated_ctx
-                    )
-                critique = self._review_with_llm(passage, style_guide_text, citation_style, guardrail_text)
-                return AgentResponse(
-                    success=True, agent_name=self.agent_name,
-                    user_message=f"🧪 **Review (inline passage)**\n\n{critique}",
-                    updated_context=updated_ctx
-                )
-
-            # Mode B: Review ALL
-            if wants_all:
-                found = self._find_all_sections()
-                if not found:
-                    msg = "I couldn't find any saved sections. Alternatively, send `review: <Text>` for an inline review."
-                    return AgentResponse(
-                        success=False, agent_name=self.agent_name,
-                        instructions=[AgentInstruction(
-                            requesting_agent=self.agent_name, action_type="ask_user",
-                            target="user", message=msg, reasoning="No saved sections available."
-                        )],
-                        user_message=msg, updated_context=updated_ctx
-                    )
-
-                # Compact batch (limit prompt size)
-                import os
-                snippets = []
-                for path in found[:12]:
-                    try:
-                        with open(path, "r", encoding="utf-8", errors="ignore") as f:
-                            txt = f.read().strip()
-                        if len(txt) > 1800:
-                            txt = txt[:1800] + "\n… (truncated)"
-                        snippets.append(f"\n---\n# {os.path.basename(path)}\n{txt}")
-                    except Exception:
-                        continue
-                batch = "\n".join(snippets)
-                critique = self._review_with_llm(batch, style_guide_text, citation_style, guardrail_text, multi_section=True)
-                return AgentResponse(
-                    success=True, agent_name=self.agent_name,
-                    user_message=f"🧵 **Overall Review (excerpt, up to 12 sections)**\n\n{critique}",
-                    updated_context=updated_ctx
-                )
-
-            # Mode C: Review a specific chapter/section (e.g., 2.3)
-            if target_pair:
-                ch_idx, sec_idx = target_pair
-
-                # Ensure an outline is present (for nicer titles)
-                if not outline:
-                    sec = load_latest_outline()
-                    if sec:
-                        outline = self._section_to_thesis_outline(sec)
-                        updated_ctx.latest_outline = outline
-
-                md, err = self._load_markdown_for_review(ch_idx, sec_idx)
-                if err:
-                    msg = f"⚠️ {err}\n(Tip: the section file may be named e.g., `08.03.md`, `8.3.md`, or `8-3.md`.)"
-                    return AgentResponse(
-                        success=False, agent_name=self.agent_name,
-                        instructions=[AgentInstruction(
-                            requesting_agent=self.agent_name, action_type="ask_user", target="user",
-                            message=msg, reasoning="No saved section markdown found."
-                        )],
-                        user_message=msg, updated_context=updated_ctx
-                    )
-
-                critique = self._review_with_llm(md, style_guide_text, citation_style, guardrail_text)
-                title = self._title_for(outline, ch_idx, sec_idx) if outline else f"Chapter {ch_idx}.{sec_idx or 0}".rstrip(".0")
-                return AgentResponse(
-                    success=True, agent_name=self.agent_name,
-                    user_message=f"🔎 **Review for {title}**\n\n{critique}",
-                    updated_context=updated_ctx
-                )
-
-            # Fallback (should not be reached)
-            msg = "I couldn't determine the review mode. Send `review: <Text>` or `review chapter 2.3`."
-            return AgentResponse(
-                success=False, agent_name=self.agent_name,
-                instructions=[AgentInstruction(
-                    requesting_agent=self.agent_name, action_type="ask_user", target="user",
-                    message=msg, reasoning="Ambiguous review request."
-                )],
-                user_message=msg, updated_context=updated_ctx
-            )
-
-        except Exception as e:
-            logger.error(f"[ReviewerAgent] Error: {e}")
-            return AgentResponse(
-                success=False,
-                agent_name=self.agent_name,
-                user_message=f"An error occurred: {e}",
-                updated_context=context
-            )
-
+  
     def process_request(self, user_input: str, context: UserContext, options: Optional[dict] = None) -> AgentResponse:
         """
         Topic-Agent-style pipeline:
@@ -266,7 +83,22 @@ class ReviewerAgent:
 
             # ---------------- 3) Gate: enough info? --------------
             # Lightweight intent detection only (no heavy IO)
-            inline_match = re.search(r"\breview\s*:\s*(.+)$", t, flags=re.I | re.S)
+            flags = re.I | re.S
+            inline_match = None
+            inline_patterns = [
+                # 1) review: <text>
+                r"\breview\s*:\s*(?P<txt>.+)$",
+                # 2) review <text>   (aber NICHT 'review all' / 'review chapter ...')
+                r"\breview\s+(?!all\b)(?!chapter\b)(?!kapitel\b)(?P<txt>.+)$",
+                # 3) (please) give me feedback to/on/about <text>
+                r"\b(?:please\s+)?give\s+me\s+feedback\s+(?:to|on|about)\s+(?P<txt>.+)$",
+            ]
+
+            for pat in inline_patterns:
+                m = re.search(pat, t, flags)
+                if m:
+                    inline_match = m
+                    break
             wants_all   = bool(re.search(r"\breview\s+all\b", t, flags=re.I))
             target_pair = None if (inline_match or wants_all) else self._parse_chapter_target(t)
 
@@ -296,7 +128,7 @@ class ReviewerAgent:
 
             # Mode A: Inline review
             if inline_match:
-                passage = inline_match.group(1).strip()
+                passage = inline_match.group("txt").strip()
                 if not passage:
                     msg = "Please append the text to be reviewed after `review:`."
                     return AgentResponse(
@@ -698,8 +530,10 @@ class ReviewerAgent:
         help_msg = (
             "What should I review?\n"
             "- `review: <Your text>`\n"
+            "- `review <Your text>`\n"
+            "- `give me feedback to <Your text>`\n"
+            "- `please give me feedback to <Your text>`\n"
             "- `review chapter 2.3` (or `review kapitel 2.3`)\n"
             "- `review all`\n"
         ) + (("\nCurrent outline:\n" + menu) if menu else "")
         return help_msg
-
