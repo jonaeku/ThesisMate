@@ -17,6 +17,7 @@ from src.models.models import (
 # global style store (style.json in data/thesis/config)
 from src.utils.style_store import get_style as get_global_style
 
+
 logger = get_logger(__name__)
 
 # IMPORTANT: matches your real layout like

@@ -21,8 +21,6 @@ from src.models.models import (
 from src.utils.style_store import get_style as get_global_style, save_style as save_global_style
 
 
-
-
 logger = get_logger(__name__)
 PAPERS_DIR_GLOB = "data/**/*.json"
 

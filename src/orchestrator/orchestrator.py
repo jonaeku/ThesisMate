@@ -12,7 +12,7 @@ from src.agents.writing import WritingAssistantAgent
 from src.models.models import UserContext
 
 from src.utils.config import get_env
-from src.utils.logging import get_logger
+from src.utils.custom_logging import get_logger
 from src.utils.openrouter_client import OpenRouterClient
 #from src.utils.gemini_client import GeminiClient
 
