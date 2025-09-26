@@ -77,3 +77,10 @@ def next_deadline_message(credentials_path="credentials.json", token_path="token
         "message": human,
     }
 
+
+if __name__ == "__main__":
+    reminder = next_deadline_message()
+    if reminder:
+        print(reminder["message"])
+    else:
+        print("No upcoming deadlines found.")

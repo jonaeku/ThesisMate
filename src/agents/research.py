@@ -108,25 +108,26 @@ Respond in JSON format:
                     user_message=question
                 )
             
-            # If we can handle but need more info from capability assessment
-            if assessment.confidence < 0.7 or assessment.missing_info:
+            # If we can handle but need more info from capability assessment - be more balanced
+            if assessment.confidence < 0.5 or (assessment.missing_info and len(assessment.missing_info) > 3):
                 instructions = []
-                if assessment.suggested_questions:
-                    for question in assessment.suggested_questions:
-                        instructions.append(AgentInstruction(
-                            requesting_agent=self.agent_name,
-                            action_type="ask_user",
-                            target="user",
-                            message=question,
-                            reasoning=f"Need this information to conduct effective research: {assessment.reasoning}"
-                        ))
+                if assessment.suggested_questions and len(assessment.suggested_questions) <= 2:
+                    # Only ask the most important question
+                    question = assessment.suggested_questions[0]
+                    instructions.append(AgentInstruction(
+                        requesting_agent=self.agent_name,
+                        action_type="ask_user",
+                        target="user",
+                        message=question,
+                        reasoning=f"Need this information to conduct effective research: {assessment.reasoning}"
+                    ))
                 
                 return AgentResponse(
                     success=False,
                     agent_name=self.agent_name,
                     instructions=instructions,
                     capability_assessment=assessment,
-                    user_message="I need more specific information to help you effectively."
+                    user_message="I need a bit more information to help you effectively."
                 )
             
             # Extract research query from user input
@@ -146,38 +147,39 @@ Respond in JSON format:
     def _has_enough_research_info(self, user_input: str, context: UserContext) -> bool:
         """Check if we have enough specific information to conduct meaningful research"""
         try:
-            # Use LLM to determine if the input contains a specific research topic
-            prompt = f"""You are a strict research assistant. Analyze if this request contains enough SPECIFIC information to conduct meaningful academic research.
+            # Use LLM to determine if the input contains a research topic
+            prompt = f"""You are a balanced research assistant. Analyze if this request contains enough information to conduct meaningful academic research.
 
 User request: "{user_input}"
 Context: Field: {context.field or 'Unknown'}, Interests: {context.interests or 'None'}
 
-STRICT CRITERIA - A request has ENOUGH information ONLY if it contains:
-- A SPECIFIC research topic, technology, concept, or domain (e.g., "machine learning", "neural networks", "blockchain", "climate change")
-- Clear subject matter that can be directly searched in academic databases
-- NOT just generic words like "papers", "research", "help", "find"
+BALANCED CRITERIA - A request has ENOUGH information if it contains:
+- A specific research topic, technology, concept, or domain (e.g., "machine learning", "neural networks", "blockchain")
+- Clear subject matter that can be searched in academic databases
+- OR a general topic with helpful context from user's field/interests
+- OR a request that mentions a specific technology/method even if asking for help
 
 A request has NOT ENOUGH information if it's:
-- Vague requests for help ("help me", "find papers", "research help", "I need help")
-- Generic requests without specific topics ("find me papers", "do research")
-- Just asking for assistance without naming a topic
-- Contains only generic research words without specific subject matter
+- Completely vague with no topic mentioned ("help me", "find papers", "research help")
+- Only greetings or questions about capabilities
+- No identifiable subject matter even with context
 
 EXAMPLES:
 ✅ ENOUGH: "Find papers on machine learning in healthcare"
 ✅ ENOUGH: "I need research on neural networks" 
 ✅ ENOUGH: "Research blockchain technology"
 ✅ ENOUGH: "Papers about climate change"
-❌ NOT ENOUGH: "Help me find papers"
-❌ NOT ENOUGH: "I need research help"
-❌ NOT ENOUGH: "Find me some papers"
-❌ NOT ENOUGH: "Can you help with research"
-❌ NOT ENOUGH: "I want to do research"
+✅ ENOUGH: "Help me find papers on AI ethics" (has specific topic)
+✅ ENOUGH: "I need research help with deep learning" (has specific topic)
+❌ NOT ENOUGH: "Help me find papers" (no topic)
+❌ NOT ENOUGH: "I need research help" (no topic)
+❌ NOT ENOUGH: "Can you help with research" (no topic)
+❌ NOT ENOUGH: "What can you do?"
 
-Be VERY STRICT. Answer with ONLY "ENOUGH" or "NOT ENOUGH"."""
+Be REASONABLE - if there's any identifiable topic, it's probably enough. Answer with ONLY "ENOUGH" or "NOT ENOUGH"."""
 
             messages = [
-                {"role": "system", "content": "You are a strict gatekeeper. Only allow requests with specific research topics. Be very strict about requiring concrete subject matter."},
+                {"role": "system", "content": "You are a balanced research assistant. Accept requests that have identifiable topics, even if they need some clarification."},
                 {"role": "user", "content": prompt}
             ]
             
@@ -186,12 +188,18 @@ Be VERY STRICT. Answer with ONLY "ENOUGH" or "NOT ENOUGH"."""
             if response and "ENOUGH" in response.upper() and "NOT ENOUGH" not in response.upper():
                 return True
             else:
-                return False
+                # Fallback: check for technical terms or meaningful keywords
+                user_lower = user_input.lower()
+                tech_keywords = ['ai', 'machine learning', 'neural', 'blockchain', 'algorithm', 'data', 'computer', 'software', 'technology', 'system', 'model', 'analysis', 'method', 'approach', 'framework', 'application']
+                has_tech_term = any(keyword in user_lower for keyword in tech_keywords)
+                has_context = context.field and context.field != 'Unknown'
+                
+                return has_tech_term or has_context
                 
         except Exception as e:
             logger.error(f"Error checking research info sufficiency: {e}")
-            # If error, be conservative and ask for more info
-            return False
+            # If error, check for basic meaningful content
+            return len(user_input.strip()) > 5 and any(word.isalpha() for word in user_input.split())
     
     def _get_research_clarification_question(self, user_input: str, context: UserContext) -> str:
         """Generate an appropriate clarification question for research"""
